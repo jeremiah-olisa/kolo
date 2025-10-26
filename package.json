@@ -21,7 +21,7 @@
     "lerna"
   ],
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "install:all": "pnpm install",
     "build": "lerna run build --stream",
     "build:core": "lerna run build --scope=@kolo/core --stream",
     "dev": "lerna run dev --parallel",
@@ -30,7 +30,7 @@
     "lint": "lerna run lint --stream",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "clean": "lerna clean -y && rm -rf node_modules",
+    "clean": "pnpm -r exec rm -rf node_modules && rm -rf node_modules",
     "clean:build": "lerna run clean --stream",
     "version": "lerna version --conventional-commits",
     "version:patch": "lerna version patch --yes",
