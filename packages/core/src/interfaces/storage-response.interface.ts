@@ -1,12 +1,4 @@
-import {
-  StorageFile,
-  StorageObject,
-  UploadOptions,
-  DownloadOptions,
-  DeleteOptions,
-  ListOptions,
-  ListResult,
-} from '../types';
+import { StorageObject, ListResult } from '../types';
 
 /**
  * Response interfaces for storage operations
@@ -17,13 +9,13 @@ export interface UploadResponse {
   url?: string;
   publicUrl?: string;
   size?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
-  raw?: any;
+  raw?: unknown;
 }
 
 export interface DownloadResponse {
@@ -31,13 +23,13 @@ export interface DownloadResponse {
   url?: string;
   signedUrl?: string;
   content?: Buffer;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
-  raw?: any;
+  raw?: unknown;
 }
 
 export interface DeleteResponse {
@@ -46,9 +38,9 @@ export interface DeleteResponse {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
-  raw?: any;
+  raw?: unknown;
 }
 
 export interface GetResponse {
@@ -57,9 +49,9 @@ export interface GetResponse {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
-  raw?: any;
+  raw?: unknown;
 }
 
 export interface ListResponse {
@@ -68,9 +60,9 @@ export interface ListResponse {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
-  raw?: any;
+  raw?: unknown;
 }
 
 export interface ExistsResponse {
@@ -79,7 +71,7 @@ export interface ExistsResponse {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
-  raw?: any;
+  raw?: unknown;
 }
