@@ -1,0 +1,21 @@
+{
+  "name": "kolo-example-basic",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Basic example of using Kolo storage adapters",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@kolo/core": "workspace:*",
+    "@kolo/adapter-local": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
