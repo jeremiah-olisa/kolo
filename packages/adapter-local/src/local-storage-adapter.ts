@@ -61,7 +61,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file
    */
-  async upload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
     try {
       const key = options?.key || this.generateFileKey(file.filename);
       const filePath = this.getFilePath(key);
@@ -100,7 +100,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file
    */
-  async download(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     try {
       const filePath = this.getFilePath(key);
 
@@ -126,7 +126,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file
    */
-  async delete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
+  protected async performDelete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
       const filePath = this.getFilePath(key);
 
@@ -150,7 +150,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Get file metadata
    */
-  async get(key: string): Promise<GetResponse> {
+  protected async performGet(key: string): Promise<GetResponse> {
     try {
       const filePath = this.getFilePath(key);
       const stats = await stat(filePath);
@@ -177,7 +177,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * List files
    */
-  async list(options?: ListOptions): Promise<ListResponse> {
+  protected async performList(options?: ListOptions): Promise<ListResponse> {
     try {
       const prefix = options?.prefix || '';
       const searchPath = path.join(this.rootPath, prefix);
@@ -203,7 +203,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists
    */
-  async exists(key: string): Promise<ExistsResponse> {
+  protected async performExists(key: string): Promise<ExistsResponse> {
     try {
       const filePath = this.getFilePath(key);
       await access(filePath, fs.constants.F_OK);
