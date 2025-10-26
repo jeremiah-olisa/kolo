@@ -1,6 +1,5 @@
 import {
   StorageFile,
-  StorageObject,
   UploadOptions,
   DownloadOptions,
   DeleteOptions,
