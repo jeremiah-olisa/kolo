@@ -1,6 +1,5 @@
 import { StorageConfig } from '@kolo/core';
 
-
 /**
  * S3 storage configuration
  */
@@ -45,4 +44,3 @@ export interface S3Config extends StorageConfig {
    */
   basePath?: string;
 }
-

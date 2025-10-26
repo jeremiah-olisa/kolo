@@ -1,6 +1,6 @@
 /**
  * Logger Example: Comprehensive Logging for Storage Operations
- * 
+ *
  * This example demonstrates how to create a comprehensive logger
  * that tracks all storage operations with detailed information.
  */
@@ -138,7 +138,7 @@ class StorageLogger {
     // Format for console output
     const color = level === 'error' ? '\x1b[31m' : '\x1b[32m';
     const reset = '\x1b[0m';
-    
+
     console.log(`${color}[${timestamp}] ${level.toUpperCase()} - ${event}${reset}`);
     console.log(JSON.stringify(logEntry, null, 2));
     console.log('');

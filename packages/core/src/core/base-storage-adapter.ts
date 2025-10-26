@@ -76,7 +76,7 @@ export abstract class BaseStorageAdapter implements IStorageAdapter {
    * Upload with event hooks
    */
   async upload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
-    const correlationId = options?.metadata?.correlationId as string | undefined || uuidv4();
+    const correlationId = (options?.metadata?.correlationId as string | undefined) || uuidv4();
     const startTime = Date.now();
 
     try {
@@ -376,8 +376,14 @@ export abstract class BaseStorageAdapter implements IStorageAdapter {
   }
 
   // Abstract methods to be implemented by concrete classes
-  protected abstract performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse>;
-  protected abstract performDownload(key: string, options?: DownloadOptions): Promise<DownloadResponse>;
+  protected abstract performUpload(
+    file: StorageFile,
+    options?: UploadOptions,
+  ): Promise<UploadResponse>;
+  protected abstract performDownload(
+    key: string,
+    options?: DownloadOptions,
+  ): Promise<DownloadResponse>;
   protected abstract performDelete(key: string, options?: DeleteOptions): Promise<DeleteResponse>;
   protected abstract performGet(key: string): Promise<GetResponse>;
   protected abstract performList(options?: ListOptions): Promise<ListResponse>;

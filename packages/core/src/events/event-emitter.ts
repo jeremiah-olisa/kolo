@@ -19,7 +19,7 @@ export class StorageEventEmitter {
     listener: EventListener<StorageEventDataMap[K]>,
   ): () => void {
     const eventKey = event as string;
-    
+
     if (!this.listeners.has(eventKey)) {
       this.listeners.set(eventKey, new Set());
     }
@@ -66,7 +66,7 @@ export class StorageEventEmitter {
   ): void {
     const eventKey = event as string;
     const listeners = this.listeners.get(eventKey);
-    
+
     if (listeners) {
       listeners.delete(listener as EventListener);
       if (listeners.size === 0) {

@@ -189,7 +189,7 @@ const result = await adapter.upload(
       uploadedBy: 'admin',
       timestamp: new Date().toISOString(),
     },
-  }
+  },
 );
 ```
 
@@ -314,7 +314,7 @@ if (result.success) {
 ```typescript
 try {
   const result = await adapter.upload(file);
-  
+
   if (!result.success) {
     switch (result.error?.code) {
       case 'STORAGE_CONFIGURATION_ERROR':
@@ -386,7 +386,7 @@ async function uploadToMultipleAdapters(file: StorageFile) {
     adapters.map((name) => {
       const adapter = storageManager.getAdapter(name);
       return adapter.upload(file);
-    })
+    }),
   );
 
   results.forEach((result, index) => {
@@ -402,18 +402,15 @@ async function uploadToMultipleAdapters(file: StorageFile) {
 ### Custom Metadata Tracking
 
 ```typescript
-const result = await adapter.upload(
-  file,
-  {
-    metadata: {
-      originalName: file.filename,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: userId,
-      fileHash: calculateHash(file.content),
-      tags: ['important', 'verified'],
-    },
-  }
-);
+const result = await adapter.upload(file, {
+  metadata: {
+    originalName: file.filename,
+    uploadedAt: new Date().toISOString(),
+    uploadedBy: userId,
+    fileHash: calculateHash(file.content),
+    tags: ['important', 'verified'],
+  },
+});
 
 // Later, retrieve and use metadata
 const fileInfo = await adapter.get(result.key!);
@@ -472,6 +469,7 @@ app.listen(3000, () => console.log('Server running on port 3000'));
 ## Best Practices
 
 1. **Use Environment Variables for Credentials**
+
    ```typescript
    const config = {
      provider: 's3',
@@ -483,6 +481,7 @@ app.listen(3000, () => console.log('Server running on port 3000'));
    ```
 
 2. **Enable Fallback for Critical Applications**
+
    ```typescript
    const storageManager = new StorageManager({
      enableFallback: true,
@@ -491,6 +490,7 @@ app.listen(3000, () => console.log('Server running on port 3000'));
    ```
 
 3. **Check Adapter Readiness**
+
    ```typescript
    if (storageManager.isAdapterReady('s3')) {
      const adapter = storageManager.getAdapter('s3');
@@ -499,6 +499,7 @@ app.listen(3000, () => console.log('Server running on port 3000'));
    ```
 
 4. **Handle Errors Gracefully**
+
    ```typescript
    const result = await adapter.upload(file);
    if (!result.success) {

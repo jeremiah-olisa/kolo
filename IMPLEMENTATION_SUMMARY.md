@@ -11,6 +11,7 @@ Successfully restructured the Kolo storage adapters from plain TypeScript files 
 Transformed the flat file structure into a proper monorepo with individual packages:
 
 **Before:**
+
 ```
 packages/
 ├── core/
@@ -22,6 +23,7 @@ packages/
 ```
 
 **After:**
+
 ```
 packages/
 ├── core/                    # @kolo/core
@@ -63,21 +65,27 @@ const manager = new StorageManager({
       name: 's3',
       enabled: true,
       priority: 3,
-      config: { /* S3 config */ }
+      config: {
+        /* S3 config */
+      },
     },
     {
-      name: 'cloudinary', 
+      name: 'cloudinary',
       enabled: true,
       priority: 2,
-      config: { /* Cloudinary config */ }
+      config: {
+        /* Cloudinary config */
+      },
     },
     {
       name: 'local',
       enabled: true,
       priority: 1,
-      config: { /* Local config */ }
-    }
-  ]
+      config: {
+        /* Local config */
+      },
+    },
+  ],
 });
 
 // Register factories
@@ -108,23 +116,27 @@ const adapter = manager.getAdapterWithFallback('s3');
 ## Key Features Implemented
 
 ### 1. Factory Pattern ✅
+
 ```typescript
 storageManager.registerFactory('s3', (config) => new S3StorageAdapter(config));
 ```
 
 ### 2. Multiple Adapter Support ✅
+
 ```typescript
 const s3Adapter = manager.getAdapter('s3');
 const localAdapter = manager.getAdapter('local');
 ```
 
 ### 3. Fallback Support ✅
+
 ```typescript
 const adapter = manager.getAdapterWithFallback('s3');
 // Automatically falls back if S3 is unavailable
 ```
 
 ### 4. Priority Ordering ✅
+
 ```typescript
 {
   name: 's3',
@@ -134,6 +146,7 @@ const adapter = manager.getAdapterWithFallback('s3');
 ```
 
 ### 5. Modular Installation ✅
+
 ```bash
 # Install only what you need
 npm install @kolo/core @kolo/local
@@ -152,11 +165,13 @@ npm install @kolo/core @kolo/s3 @kolo/cloudinary
 Migration is straightforward:
 
 **Before:**
+
 ```typescript
 import { LocalStorageAdapter } from '@kolo/core';
 ```
 
 **After:**
+
 ```typescript
 import { StorageManager } from '@kolo/core';
 import { LocalStorageAdapter } from '@kolo/local';
@@ -165,24 +180,28 @@ import { LocalStorageAdapter } from '@kolo/local';
 ## Testing
 
 ### Build ✅
+
 ```bash
 $ pnpm run build
 ✓ Successfully built 5 packages
 ```
 
 ### Lint ✅
+
 ```bash
 $ pnpm run lint
 ✓ Successfully linted 5 packages
 ```
 
 ### Security ✅
+
 ```bash
 $ CodeQL Analysis
 ✓ No security issues found
 ```
 
 ### Example ✅
+
 Working example demonstrates all features in `examples/basic/`
 
 ## Follows Requested Pattern
@@ -209,8 +228,8 @@ const manager = new StorageManager({
   enableFallback: true,
   adapters: [
     { name: 's3', enabled: true, priority: 2, config: s3Config },
-    { name: 'local', enabled: true, priority: 1, config: localConfig }
-  ]
+    { name: 'local', enabled: true, priority: 1, config: localConfig },
+  ],
 });
 
 manager.registerFactory('s3', (config) => new S3StorageAdapter(config));
@@ -231,6 +250,7 @@ const result = await adapter.upload(file);
 ## Conclusion
 
 The task has been completed successfully. The adapter structure now:
+
 - ✅ Uses separate packages instead of plain files
 - ✅ Follows the coding structure pattern from PorkAte
 - ✅ Supports multiple adapter registration

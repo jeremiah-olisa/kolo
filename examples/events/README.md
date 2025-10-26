@@ -13,6 +13,7 @@ pnpm start
 ```
 
 **Features:**
+
 - Event listening for all operations
 - Basic event handling patterns
 - Complete operation lifecycle
@@ -26,6 +27,7 @@ pnpm start:logger
 ```
 
 **Features:**
+
 - Structured JSON logging
 - All storage operations logged
 - Error tracking
@@ -40,6 +42,7 @@ pnpm start:interceptor
 ```
 
 **Features:**
+
 - File size validation
 - MIME type validation
 - Blocked filename checking
@@ -54,6 +57,7 @@ pnpm start:monitor
 ```
 
 **Features:**
+
 - Operation timing tracking
 - Success/failure rates
 - Min/max/average duration
@@ -93,31 +97,37 @@ pnpm start:monitor
 The Kolo event system provides events for every storage operation:
 
 ### Upload Events
+
 - `beforeUpload` - Before upload starts
 - `afterUploadSuccess` - After successful upload
 - `uploadFailed` - When upload fails
 
 ### Download Events
+
 - `beforeDownload` - Before download starts
 - `afterDownloadSuccess` - After successful download
 - `downloadFailed` - When download fails
 
 ### Delete Events
+
 - `beforeDelete` - Before delete starts
 - `afterDeleteSuccess` - After successful delete
 - `deleteFailed` - When delete fails
 
 ### Get Events
+
 - `beforeGet` - Before getting metadata
 - `afterGetSuccess` - After successfully getting metadata
 - `getFailed` - When getting metadata fails
 
 ### List Events
+
 - `beforeList` - Before listing files
 - `afterListSuccess` - After successfully listing files
 - `listFailed` - When listing fails
 
 ### Exists Events
+
 - `beforeExists` - Before checking existence
 - `afterExistsSuccess` - After successfully checking existence
 - `existsFailed` - When existence check fails
@@ -125,7 +135,9 @@ The Kolo event system provides events for every storage operation:
 ## 💡 Use Cases
 
 ### Logging
+
 Track all storage operations for debugging and auditing:
+
 ```typescript
 events.on(StorageEvent.AFTER_UPLOAD_SUCCESS, (data) => {
   console.log(`Uploaded: ${data.response.key} in ${data.duration}ms`);
@@ -133,7 +145,9 @@ events.on(StorageEvent.AFTER_UPLOAD_SUCCESS, (data) => {
 ```
 
 ### Validation
+
 Validate files before they're uploaded:
+
 ```typescript
 events.on(StorageEvent.BEFORE_UPLOAD, (data) => {
   if (data.file.size > MAX_SIZE) {
@@ -143,7 +157,9 @@ events.on(StorageEvent.BEFORE_UPLOAD, (data) => {
 ```
 
 ### Performance Monitoring
+
 Track operation performance:
+
 ```typescript
 events.on(StorageEvent.AFTER_UPLOAD_SUCCESS, (data) => {
   metrics.record('upload', data.duration);
@@ -151,7 +167,9 @@ events.on(StorageEvent.AFTER_UPLOAD_SUCCESS, (data) => {
 ```
 
 ### Security Auditing
+
 Log security-relevant events:
+
 ```typescript
 events.on(StorageEvent.AFTER_DELETE_SUCCESS, (data) => {
   auditLog.record('DELETE', data.key, data.correlationId);

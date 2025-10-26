@@ -63,11 +63,7 @@ export function sanitizeFilename(filename: string): string {
 export function isValidKey(key: string): boolean {
   // Key should not be empty, should not start/end with slash, no double slashes
   return (
-    !!key &&
-    key.length > 0 &&
-    !key.startsWith('/') &&
-    !key.endsWith('/') &&
-    !key.includes('//')
+    !!key && key.length > 0 && !key.startsWith('/') && !key.endsWith('/') && !key.includes('//')
   );
 }
 
@@ -97,7 +93,7 @@ export function getMimeType(filename: string): string {
     svg: 'image/svg+xml',
     bmp: 'image/bmp',
     ico: 'image/x-icon',
-    
+
     // Documents
     pdf: 'application/pdf',
     doc: 'application/msword',
@@ -108,26 +104,26 @@ export function getMimeType(filename: string): string {
     pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     txt: 'text/plain',
     csv: 'text/csv',
-    
+
     // Archives
     zip: 'application/zip',
     rar: 'application/x-rar-compressed',
     '7z': 'application/x-7z-compressed',
     tar: 'application/x-tar',
     gz: 'application/gzip',
-    
+
     // Video
     mp4: 'video/mp4',
     avi: 'video/x-msvideo',
     mov: 'video/quicktime',
     wmv: 'video/x-ms-wmv',
     flv: 'video/x-flv',
-    
+
     // Audio
     mp3: 'audio/mpeg',
     wav: 'audio/wav',
     ogg: 'audio/ogg',
-    
+
     // Code
     js: 'application/javascript',
     json: 'application/json',
