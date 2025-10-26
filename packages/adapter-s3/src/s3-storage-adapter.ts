@@ -1,6 +1,6 @@
-import { BaseStorageAdapter } from '../core/base-storage-adapter';
-import { S3Config } from '../interfaces/storage-config.interface';
 import {
+  BaseStorageAdapter,
+  S3Config,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -13,12 +13,10 @@ import {
   ListResponse,
   ExistsResponse,
   StorageObject,
-} from '../interfaces';
-import {
   StorageConfigurationException,
-  FileNotFoundException,
-} from '../exceptions';
-import { generateKey, sanitizeFilename } from '../utils';
+  generateKey,
+  sanitizeFilename,
+} from '@kolo/core';
 
 /**
  * AWS S3 storage adapter
@@ -102,7 +100,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from S3
    */
-  async download(key: string, options?: DownloadOptions): Promise<DownloadResponse> {
+  async download(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
@@ -134,7 +132,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file from S3
    */
-  async delete(key: string, options?: DeleteOptions): Promise<DeleteResponse> {
+  async delete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
@@ -190,9 +188,9 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * List files in S3
    */
-  async list(options?: ListOptions): Promise<ListResponse> {
+  async list(_options?: ListOptions): Promise<ListResponse> {
     try {
-      const prefix = this.getFullKey(options?.prefix || '');
+      // const prefix = this.getFullKey(options?.prefix || ''); // For future use
 
       // Note: This is a placeholder. In a real implementation, you would use:
       // const command = new ListObjectsV2Command({
@@ -230,9 +228,9 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in S3
    */
-  async exists(key: string): Promise<ExistsResponse> {
+  async exists(_key: string): Promise<ExistsResponse> {
     try {
-      const fullKey = this.getFullKey(key);
+      // const fullKey = this.getFullKey(key); // For future use
 
       // Note: This is a placeholder. In a real implementation, you would use:
       // const command = new HeadObjectCommand({
@@ -300,7 +298,10 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Handle errors
    */
-  private handleError(error: unknown, defaultMessage: string): any {
+  private handleError(
+    error: unknown,
+    defaultMessage: string,
+  ): UploadResponse | DownloadResponse | DeleteResponse | GetResponse | ListResponse | ExistsResponse {
     if (error instanceof Error) {
       return {
         success: false,

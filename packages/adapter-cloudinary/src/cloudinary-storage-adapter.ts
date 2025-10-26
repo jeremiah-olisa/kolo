@@ -1,6 +1,6 @@
-import { BaseStorageAdapter } from '../core/base-storage-adapter';
-import { CloudinaryConfig } from '../interfaces/storage-config.interface';
 import {
+  BaseStorageAdapter,
+  CloudinaryConfig,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -13,12 +13,10 @@ import {
   ListResponse,
   ExistsResponse,
   StorageObject,
-} from '../interfaces';
-import {
   StorageConfigurationException,
-  FileNotFoundException,
-} from '../exceptions';
-import { generateKey, sanitizeFilename } from '../utils';
+  generateKey,
+  sanitizeFilename,
+} from '@kolo/core';
 
 /**
  * Cloudinary storage adapter
@@ -74,7 +72,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   async upload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
     try {
       const publicId = options?.key || this.generateFileKey(file.filename);
-      const folder = this.folder;
+      // const folder = this.folder; // For future use
 
       // Note: This is a placeholder. In a real implementation, you would use:
       // const result = await cloudinary.uploader.upload(file.content, {
@@ -109,7 +107,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from Cloudinary (get URL)
    */
-  async download(key: string, options?: DownloadOptions): Promise<DownloadResponse> {
+  async download(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const url = cloudinary.url(key, {
@@ -136,7 +134,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file from Cloudinary
    */
-  async delete(key: string, options?: DeleteOptions): Promise<DeleteResponse> {
+  async delete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const result = await cloudinary.uploader.destroy(key, {
@@ -188,7 +186,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * List files in Cloudinary
    */
-  async list(options?: ListOptions): Promise<ListResponse> {
+  async list(_options?: ListOptions): Promise<ListResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const result = await cloudinary.api.resources({
@@ -227,7 +225,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in Cloudinary
    */
-  async exists(key: string): Promise<ExistsResponse> {
+  async exists(_key: string): Promise<ExistsResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // try {
@@ -293,7 +291,10 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Handle errors
    */
-  private handleError(error: unknown, defaultMessage: string): any {
+  private handleError(
+    error: unknown,
+    defaultMessage: string,
+  ): UploadResponse | DownloadResponse | DeleteResponse | GetResponse | ListResponse | ExistsResponse {
     if (error instanceof Error) {
       return {
         success: false,

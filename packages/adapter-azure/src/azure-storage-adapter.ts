@@ -1,6 +1,6 @@
-import { BaseStorageAdapter } from '../core/base-storage-adapter';
-import { StorageConfig } from '../interfaces/storage-config.interface';
 import {
+  BaseStorageAdapter,
+  AzureConfig,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -12,38 +12,8 @@ import {
   ListOptions,
   ListResponse,
   ExistsResponse,
-} from '../interfaces';
-import { StorageConfigurationException } from '../exceptions';
-
-/**
- * Azure Blob Storage configuration
- */
-export interface AzureConfig extends StorageConfig {
-  /**
-   * Azure storage account name
-   */
-  accountName: string;
-
-  /**
-   * Azure storage account key
-   */
-  accountKey?: string;
-
-  /**
-   * Container name
-   */
-  containerName: string;
-
-  /**
-   * Connection string (alternative to accountName/accountKey)
-   */
-  connectionString?: string;
-
-  /**
-   * Base path/prefix for all operations
-   */
-  basePath?: string;
-}
+  StorageConfigurationException,
+} from '@kolo/core';
 
 /**
  * Azure Blob Storage adapter (placeholder)
@@ -82,7 +52,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to Azure Blob Storage
    */
-  async upload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  async upload(_file: StorageFile, _options?: UploadOptions): Promise<UploadResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -96,7 +66,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from Azure Blob Storage
    */
-  async download(key: string, options?: DownloadOptions): Promise<DownloadResponse> {
+  async download(_key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -110,7 +80,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file from Azure Blob Storage
    */
-  async delete(key: string, options?: DeleteOptions): Promise<DeleteResponse> {
+  async delete(_key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -124,7 +94,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Get file metadata from Azure Blob Storage
    */
-  async get(key: string): Promise<GetResponse> {
+  async get(_key: string): Promise<GetResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -138,7 +108,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * List files in Azure Blob Storage
    */
-  async list(options?: ListOptions): Promise<ListResponse> {
+  async list(_options?: ListOptions): Promise<ListResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -152,7 +122,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in Azure Blob Storage
    */
-  async exists(key: string): Promise<ExistsResponse> {
+  async exists(_key: string): Promise<ExistsResponse> {
     // Placeholder implementation
     return {
       success: false,

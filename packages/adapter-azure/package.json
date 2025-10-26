@@ -1,7 +1,7 @@
 {
-  "name": "@kolo/core",
+  "name": "@kolo/adapter-azure",
   "version": "1.0.0-alpha.1",
-  "description": "Secure storage adapter (Kolo means piggybank in Yoruba) for documents and files",
+  "description": "Azure Blob Storage adapter for Kolo",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -16,24 +16,30 @@
   },
   "keywords": [
     "storage",
-    "s3",
-    "azure-blob",
-    "cloudinary",
+    "azure",
+    "blob-storage",
     "file-storage",
     "kolo",
-    "document-storage"
+    "adapter"
   ],
   "author": "Jeremiah Olisa",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@kolo/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@azure/storage-blob": "^12.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@azure/storage-blob": {
+      "optional": true
+    }
+  },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/mocha": "^10.0.10",
     "@types/node": "^24.9.1",
-    "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
     "typescript": "^5.9.3"
   }
 }
