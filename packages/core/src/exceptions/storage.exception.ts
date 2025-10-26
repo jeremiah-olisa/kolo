@@ -117,7 +117,11 @@ export class InvalidFileTypeException<TDetails = unknown> extends StorageExcepti
     const message = allowedTypes
       ? `File type '${fileType}' is not allowed. Allowed types: ${allowedTypes.join(', ')}`
       : `File type '${fileType}' is not allowed`;
-    super(message, StorageErrorCode.INVALID_FILE_TYPE, { fileType, allowedTypes, ...details } as TDetails);
+    super(message, StorageErrorCode.INVALID_FILE_TYPE, {
+      fileType,
+      allowedTypes,
+      ...details,
+    } as TDetails);
     this.name = nameof(InvalidFileTypeException);
     Object.setPrototypeOf(this, InvalidFileTypeException.prototype);
   }
@@ -163,7 +167,9 @@ export class StorageProviderException<TDetails = unknown> extends StorageExcepti
 /**
  * Exception thrown when storage provider times out
  */
-export class StorageProviderTimeoutException<TDetails = unknown> extends StorageProviderException<TDetails> {
+export class StorageProviderTimeoutException<
+  TDetails = unknown,
+> extends StorageProviderException<TDetails> {
   constructor(message: string = 'Storage provider request timed out', details?: TDetails) {
     super(message, 408, details);
     this.name = nameof(StorageProviderTimeoutException);
@@ -195,7 +201,9 @@ export class StorageValidationException<TDetails = unknown> extends StorageExcep
  */
 export class InvalidKeyException<TDetails = unknown> extends StorageException<TDetails> {
   constructor(key: string, reason?: string, details?: TDetails) {
-    const message = reason ? `Invalid storage key '${key}': ${reason}` : `Invalid storage key '${key}'`;
+    const message = reason
+      ? `Invalid storage key '${key}': ${reason}`
+      : `Invalid storage key '${key}'`;
     super(message, StorageErrorCode.INVALID_KEY, { key, reason, ...details } as TDetails);
     this.name = nameof(InvalidKeyException);
     Object.setPrototypeOf(this, InvalidKeyException.prototype);

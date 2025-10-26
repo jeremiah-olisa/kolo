@@ -13,21 +13,22 @@ import {
   ExistsResponse,
   StorageObject,
   StorageConfigurationException,
+  FileNotFoundException,
   generateKey,
   sanitizeFilename,
 } from '@kolo/core';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { CloudinaryConfig } from './interfaces';
 
 /**
  * Cloudinary storage adapter
- * Note: This is a placeholder implementation. You'll need to install cloudinary
- * and implement the actual Cloudinary integration.
  */
 export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   private readonly cloudName: string;
   private readonly apiKey: string;
   private readonly folder?: string;
   private readonly secure: boolean;
+  private readonly resourceType: string;
   protected static readonly ADAPTER_NAME = 'Cloudinary';
 
   constructor(config: CloudinaryConfig) {
@@ -55,16 +56,15 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
     this.apiKey = config.apiKey;
     this.folder = config.folder;
     this.secure = config.secure !== false;
+    this.resourceType = config.resourceType || 'auto';
 
-    // Note: In a real implementation, you would initialize the Cloudinary client here
-    // Example:
-    // import { v2 as cloudinary } from 'cloudinary';
-    // cloudinary.config({
-    //   cloud_name: config.cloudName,
-    //   api_key: config.apiKey,
-    //   api_secret: config.apiSecret,
-    //   secure: config.secure,
-    // });
+    // Initialize the Cloudinary client
+    cloudinary.config({
+      cloud_name: config.cloudName,
+      api_key: config.apiKey,
+      api_secret: config.apiSecret,
+      secure: this.secure,
+    });
   }
 
   /**
@@ -76,31 +76,32 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   ): Promise<UploadResponse> {
     try {
       const publicId = options?.key || this.generateFileKey(file.filename);
-      // const folder = this.folder; // For future use
+      const fullPublicId = this.folder ? `${this.folder}/${publicId}` : publicId;
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const result = await cloudinary.uploader.upload(file.content, {
-      //   public_id: publicId,
-      //   folder: folder,
-      //   resource_type: this.getResourceType(file.mimeType),
-      //   context: options?.metadata,
-      //   tags: options?.metadata?.tags,
-      // });
+      // Convert buffer to base64 data URI
+      const base64Data = `data:${file.mimeType};base64,${file.content.toString('base64')}`;
 
-      const url = this.getResourceUrl(publicId);
+      const result: UploadApiResponse = await cloudinary.uploader.upload(base64Data, {
+        public_id: fullPublicId,
+        resource_type: this.getResourceType(file.mimeType),
+        context: options?.metadata
+          ? Object.fromEntries(Object.entries(options.metadata).map(([k, v]) => [k, String(v)]))
+          : undefined,
+        tags: options?.metadata?.tags ? String(options.metadata.tags).split(',') : undefined,
+      });
 
       return {
         success: true,
-        key: publicId,
-        url,
-        publicUrl: url, // Cloudinary URLs are public by default
+        key: result.public_id,
+        url: result.secure_url || result.url,
+        publicUrl: result.url,
         size: file.size,
         metadata: {
           ...options?.metadata,
           filename: file.filename,
           mimeType: file.mimeType,
-          // cloudinaryPublicId: result.public_id,
-          // cloudinaryVersion: result.version,
+          cloudinaryPublicId: result.public_id,
+          cloudinaryVersion: String(result.version),
         },
       };
     } catch (error) {
@@ -113,20 +114,19 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
    */
   protected async performDownload(
     key: string,
-    _options?: DownloadOptions,
+    options?: DownloadOptions,
   ): Promise<DownloadResponse> {
     try {
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const url = cloudinary.url(key, {
-      //   resource_type: 'auto',
-      //   secure: this.secure,
-      //   sign_url: true,
-      //   expires_at: options?.expiresIn ? Date.now() + options.expiresIn * 1000 : undefined,
-      //   attachment: options?.forceDownload,
-      //   custom_filename: options?.filename,
-      // });
-
-      const url = this.getResourceUrl(key);
+      const url = cloudinary.url(key, {
+        resource_type: this.resourceType,
+        secure: this.secure,
+        sign_url: true,
+        expires_at: options?.expiresIn
+          ? Math.floor(Date.now() / 1000) + options.expiresIn
+          : undefined,
+        attachment: options?.forceDownload,
+        custom_filename: options?.filename,
+      });
 
       return {
         success: true,
@@ -143,15 +143,14 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
    */
   protected async performDelete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const result = await cloudinary.uploader.destroy(key, {
-      //   resource_type: 'auto',
-      //   invalidate: true,
-      // });
-      //
-      // if (result.result !== 'ok') {
-      //   throw new StorageDeleteException(`Failed to delete file: ${result.result}`);
-      // }
+      const result = await cloudinary.uploader.destroy(key, {
+        resource_type: this.resourceType,
+        invalidate: true,
+      });
+
+      if (result.result !== 'ok' && result.result !== 'not found') {
+        throw new Error(`Failed to delete file: ${result.result}`);
+      }
 
       return {
         success: true,
@@ -167,25 +166,28 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
    */
   protected async performGet(key: string): Promise<GetResponse> {
     try {
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const result = await cloudinary.api.resource(key, {
-      //   resource_type: 'auto',
-      // });
+      const result: any = await cloudinary.api.resource(key, {
+        resource_type: this.resourceType,
+      });
 
       const object: StorageObject = {
-        key,
-        url: this.getResourceUrl(key),
-        // size: result.bytes,
-        // contentType: result.format,
-        // lastModified: new Date(result.created_at),
-        // metadata: result.context,
+        key: result.public_id,
+        url: result.secure_url || result.url,
+        publicUrl: result.url,
+        size: result.bytes,
+        contentType: result.format,
+        lastModified: new Date(result.created_at),
+        metadata: result.context,
       };
 
       return {
         success: true,
         object,
       };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.error?.http_code === 404) {
+        throw new FileNotFoundException(key);
+      }
       return this.handleError(error, 'Failed to get file metadata from Cloudinary');
     }
   }
@@ -193,35 +195,32 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * List files in Cloudinary
    */
-  protected async performList(_options?: ListOptions): Promise<ListResponse> {
+  protected async performList(options?: ListOptions): Promise<ListResponse> {
     try {
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const result = await cloudinary.api.resources({
-      //   type: 'upload',
-      //   prefix: options?.prefix || this.folder,
-      //   max_results: options?.maxKeys || 500,
-      //   next_cursor: options?.continuationToken,
-      // });
+      const result = await cloudinary.api.resources({
+        type: 'upload',
+        prefix: options?.prefix || this.folder,
+        max_results: options?.maxKeys || 500,
+        next_cursor: options?.continuationToken,
+        resource_type: this.resourceType,
+      });
 
-      const objects: StorageObject[] = [];
-      // In real implementation:
-      // const objects = result.resources.map((resource: any) => ({
-      //   key: resource.public_id,
-      //   url: resource.secure_url,
-      //   publicUrl: resource.url,
-      //   size: resource.bytes,
-      //   contentType: resource.format,
-      //   lastModified: new Date(resource.created_at),
-      //   metadata: resource.context,
-      // }));
+      const objects: StorageObject[] = result.resources.map((resource: any) => ({
+        key: resource.public_id,
+        url: resource.secure_url || resource.url,
+        publicUrl: resource.url,
+        size: resource.bytes,
+        contentType: resource.format,
+        lastModified: new Date(resource.created_at),
+        metadata: resource.context,
+      }));
 
       return {
         success: true,
         result: {
           objects,
-          // nextContinuationToken: result.next_cursor,
-          // hasMore: !!result.next_cursor,
-          hasMore: false,
+          nextContinuationToken: result.next_cursor,
+          hasMore: !!result.next_cursor,
         },
       };
     } catch (error) {
@@ -232,23 +231,17 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in Cloudinary
    */
-  protected async performExists(_key: string): Promise<ExistsResponse> {
+  protected async performExists(key: string): Promise<ExistsResponse> {
     try {
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // try {
-      //   await cloudinary.api.resource(key, { resource_type: 'auto' });
-      //   return { success: true, exists: true };
-      // } catch (error: any) {
-      //   if (error.http_code === 404) {
-      //     return { success: true, exists: false };
-      //   }
-      //   throw error;
-      // }
-
-      return {
-        success: true,
-        exists: false, // Placeholder
-      };
+      try {
+        await cloudinary.api.resource(key, { resource_type: this.resourceType });
+        return { success: true, exists: true };
+      } catch (error: any) {
+        if (error.error?.http_code === 404) {
+          return { success: true, exists: false };
+        }
+        throw error;
+      }
     } catch (error) {
       return this.handleError(error, 'Failed to check file existence in Cloudinary');
     }
@@ -265,7 +258,11 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Get resource type from MIME type
    */
-  private getResourceType(mimeType: string): string {
+  private getResourceType(mimeType: string): 'image' | 'video' | 'raw' | 'auto' {
+    if (this.resourceType !== 'auto') {
+      return this.resourceType as 'image' | 'video' | 'raw' | 'auto';
+    }
+
     if (mimeType.startsWith('image/')) {
       return 'image';
     }
@@ -273,15 +270,6 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
       return 'video';
     }
     return 'raw';
-  }
-
-  /**
-   * Get resource URL
-   */
-  private getResourceUrl(publicId: string): string {
-    const protocol = this.secure ? 'https' : 'http';
-    const folder = this.folder ? `${this.folder}/` : '';
-    return `${protocol}://res.cloudinary.com/${this.cloudName}/raw/upload/${folder}${publicId}`;
   }
 
   /**

@@ -91,6 +91,7 @@ events.on(StorageEvent.UPLOAD_FAILED, (data) => {
 ### Available Events
 
 Every operation emits three types of events:
+
 - **Before events** - `beforeUpload`, `beforeDownload`, `beforeDelete`, etc.
 - **Success events** - `afterUploadSuccess`, `afterDownloadSuccess`, etc.
 - **Failed events** - `uploadFailed`, `downloadFailed`, etc.

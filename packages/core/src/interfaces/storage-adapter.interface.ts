@@ -1,10 +1,4 @@
-import {
-  StorageFile,
-  UploadOptions,
-  DownloadOptions,
-  DeleteOptions,
-  ListOptions,
-} from '../types';
+import { StorageFile, UploadOptions, DownloadOptions, DeleteOptions, ListOptions } from '../types';
 import {
   UploadResponse,
   DownloadResponse,

@@ -143,11 +143,7 @@ const cloudinaryStorage = new CloudinaryStorageAdapter(cloudinaryConfig);
 ## Error Handling
 
 ```typescript
-import {
-  StorageException,
-  FileNotFoundException,
-  StorageConfigurationException,
-} from '@kolo/core';
+import { StorageException, FileNotFoundException, StorageConfigurationException } from '@kolo/core';
 
 try {
   const result = await adapter.download('non-existent-file.pdf');

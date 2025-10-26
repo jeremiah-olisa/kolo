@@ -13,21 +13,32 @@ import {
   ExistsResponse,
   StorageObject,
   StorageConfigurationException,
+  FileNotFoundException,
   generateKey,
   sanitizeFilename,
 } from '@kolo/core';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  ObjectCannedACL,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Config } from './interfaces';
 
 /**
  * AWS S3 storage adapter
- * Note: This is a placeholder implementation. You'll need to install @aws-sdk/client-s3
- * and implement the actual S3 integration.
  */
 export class S3StorageAdapter extends BaseStorageAdapter {
+  private readonly s3Client: S3Client;
   private readonly bucket: string;
   private readonly region: string;
   private readonly basePath?: string;
   protected static readonly ADAPTER_NAME = 'S3';
+
   constructor(config: S3Config) {
     super(config, S3StorageAdapter.ADAPTER_NAME);
 
@@ -47,17 +58,19 @@ export class S3StorageAdapter extends BaseStorageAdapter {
     this.region = config.region;
     this.basePath = config.basePath;
 
-    // Note: In a real implementation, you would initialize the S3 client here
-    // Example:
-    // this.s3Client = new S3Client({
-    //   region: config.region,
-    //   credentials: {
-    //     accessKeyId: config.accessKeyId,
-    //     secretAccessKey: config.secretAccessKey,
-    //   },
-    //   endpoint: config.endpoint,
-    //   forcePathStyle: config.forcePathStyle,
-    // });
+    // Initialize the S3 client
+    this.s3Client = new S3Client({
+      region: config.region,
+      credentials:
+        config.accessKeyId && config.secretAccessKey
+          ? {
+              accessKeyId: config.accessKeyId,
+              secretAccessKey: config.secretAccessKey,
+            }
+          : undefined,
+      endpoint: config.endpoint,
+      forcePathStyle: config.forcePathStyle,
+    });
   }
 
   /**
@@ -69,17 +82,22 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   ): Promise<UploadResponse> {
     try {
       const key = this.getFullKey(options?.key || this.generateFileKey(file.filename));
+      const config = this.config as S3Config;
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const command = new PutObjectCommand({
-      //   Bucket: this.bucket,
-      //   Key: key,
-      //   Body: file.content,
-      //   ContentType: options?.contentType || file.mimeType,
-      //   ACL: options?.public ? 'public-read' : undefined,
-      //   Metadata: options?.metadata,
-      // });
-      // await this.s3Client.send(command);
+      const command = new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: file.content,
+        ContentType: options?.contentType || file.mimeType,
+        ACL: options?.public
+          ? ('public-read' as ObjectCannedACL)
+          : (config.acl as ObjectCannedACL | undefined),
+        Metadata: options?.metadata
+          ? Object.fromEntries(Object.entries(options.metadata).map(([k, v]) => [k, String(v)]))
+          : undefined,
+      });
+
+      await this.s3Client.send(command);
 
       const url = this.getObjectUrl(key);
 
@@ -105,32 +123,39 @@ export class S3StorageAdapter extends BaseStorageAdapter {
    */
   protected async performDownload(
     key: string,
-    _options?: DownloadOptions,
+    options?: DownloadOptions,
   ): Promise<DownloadResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const command = new GetObjectCommand({
-      //   Bucket: this.bucket,
-      //   Key: fullKey,
-      // });
-      // const response = await this.s3Client.send(command);
-      // const content = await streamToBuffer(response.Body);
+      const command = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: fullKey,
+      });
+
+      const response = await this.s3Client.send(command);
+      const content = await this.streamToBuffer(response.Body);
 
       const url = this.getObjectUrl(fullKey);
 
-      // If signed URL is needed:
-      // const signedUrl = await getSignedUrl(this.s3Client, command, {
-      //   expiresIn: options?.expiresIn || 3600,
-      // });
+      // Generate signed URL if requested
+      let signedUrl: string | undefined;
+      if (options?.expiresIn) {
+        signedUrl = await getSignedUrl(this.s3Client, command, {
+          expiresIn: options.expiresIn,
+        });
+      }
 
       return {
         success: true,
         url,
-        signedUrl: url, // In real implementation, this would be a signed URL
+        content,
+        signedUrl,
       };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'NoSuchKey') {
+        throw new FileNotFoundException(key);
+      }
       return this.handleError(error, 'Failed to download file from S3');
     }
   }
@@ -142,18 +167,21 @@ export class S3StorageAdapter extends BaseStorageAdapter {
     try {
       const fullKey = this.getFullKey(key);
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const command = new DeleteObjectCommand({
-      //   Bucket: this.bucket,
-      //   Key: fullKey,
-      // });
-      // await this.s3Client.send(command);
+      const command = new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: fullKey,
+      });
+
+      await this.s3Client.send(command);
 
       return {
         success: true,
         key: fullKey,
       };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'NoSuchKey') {
+        throw new FileNotFoundException(key);
+      }
       return this.handleError(error, 'Failed to delete file from S3');
     }
   }
@@ -165,28 +193,31 @@ export class S3StorageAdapter extends BaseStorageAdapter {
     try {
       const fullKey = this.getFullKey(key);
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const command = new HeadObjectCommand({
-      //   Bucket: this.bucket,
-      //   Key: fullKey,
-      // });
-      // const response = await this.s3Client.send(command);
+      const command = new HeadObjectCommand({
+        Bucket: this.bucket,
+        Key: fullKey,
+      });
+
+      const response = await this.s3Client.send(command);
 
       const object: StorageObject = {
         key: fullKey,
         url: this.getObjectUrl(fullKey),
-        // size: response.ContentLength,
-        // contentType: response.ContentType,
-        // lastModified: response.LastModified,
-        // etag: response.ETag,
-        // metadata: response.Metadata,
+        size: response.ContentLength,
+        contentType: response.ContentType,
+        lastModified: response.LastModified,
+        etag: response.ETag,
+        metadata: response.Metadata,
       };
 
       return {
         success: true,
         object,
       };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'NotFound') {
+        throw new FileNotFoundException(key);
+      }
       return this.handleError(error, 'Failed to get file metadata from S3');
     }
   }
@@ -194,36 +225,33 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * List files in S3
    */
-  protected async performList(_options?: ListOptions): Promise<ListResponse> {
+  protected async performList(options?: ListOptions): Promise<ListResponse> {
     try {
-      // const prefix = this.getFullKey(options?.prefix || ''); // For future use
+      const prefix = this.getFullKey(options?.prefix || '');
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const command = new ListObjectsV2Command({
-      //   Bucket: this.bucket,
-      //   Prefix: prefix,
-      //   MaxKeys: options?.maxKeys,
-      //   ContinuationToken: options?.continuationToken,
-      // });
-      // const response = await this.s3Client.send(command);
+      const command = new ListObjectsV2Command({
+        Bucket: this.bucket,
+        Prefix: prefix,
+        MaxKeys: options?.maxKeys,
+        ContinuationToken: options?.continuationToken,
+      });
 
-      const objects: StorageObject[] = [];
-      // In real implementation:
-      // const objects = (response.Contents || []).map((item) => ({
-      //   key: item.Key!,
-      //   url: this.getObjectUrl(item.Key!),
-      //   size: item.Size,
-      //   lastModified: item.LastModified,
-      //   etag: item.ETag,
-      // }));
+      const response = await this.s3Client.send(command);
+
+      const objects: StorageObject[] = (response.Contents || []).map((item) => ({
+        key: item.Key!,
+        url: this.getObjectUrl(item.Key!),
+        size: item.Size,
+        lastModified: item.LastModified,
+        etag: item.ETag,
+      }));
 
       return {
         success: true,
         result: {
           objects,
-          // nextContinuationToken: response.NextContinuationToken,
-          // hasMore: response.IsTruncated || false,
-          hasMore: false,
+          nextContinuationToken: response.NextContinuationToken,
+          hasMore: response.IsTruncated || false,
         },
       };
     } catch (error) {
@@ -234,29 +262,24 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in S3
    */
-  protected async performExists(_key: string): Promise<ExistsResponse> {
+  protected async performExists(key: string): Promise<ExistsResponse> {
     try {
-      // const fullKey = this.getFullKey(key); // For future use
+      const fullKey = this.getFullKey(key);
 
-      // Note: This is a placeholder. In a real implementation, you would use:
-      // const command = new HeadObjectCommand({
-      //   Bucket: this.bucket,
-      //   Key: fullKey,
-      // });
-      // try {
-      //   await this.s3Client.send(command);
-      //   return { success: true, exists: true };
-      // } catch (error) {
-      //   if (error.name === 'NotFound') {
-      //     return { success: true, exists: false };
-      //   }
-      //   throw error;
-      // }
+      const command = new HeadObjectCommand({
+        Bucket: this.bucket,
+        Key: fullKey,
+      });
 
-      return {
-        success: true,
-        exists: false, // Placeholder
-      };
+      try {
+        await this.s3Client.send(command);
+        return { success: true, exists: true };
+      } catch (error: any) {
+        if (error.name === 'NotFound') {
+          return { success: true, exists: false };
+        }
+        throw error;
+      }
     } catch (error) {
       return this.handleError(error, 'Failed to check file existence in S3');
     }
@@ -277,6 +300,25 @@ export class S3StorageAdapter extends BaseStorageAdapter {
       return `${this.basePath}/${key}`.replace(/\/+/g, '/');
     }
     return key;
+  }
+
+  /**
+   * Convert stream to buffer
+   */
+  private async streamToBuffer(stream: any): Promise<Buffer> {
+    if (!stream) {
+      return Buffer.from([]);
+    }
+
+    if (Buffer.isBuffer(stream)) {
+      return stream;
+    }
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
   }
 
   /**

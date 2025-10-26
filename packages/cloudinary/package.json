@@ -27,6 +27,7 @@
     "access": "public"
   },
   "dependencies": {
+    "cloudinary": "^1.40.0",
     "@kolo/core": "workspace:*"
   },
   "peerDependencies": {

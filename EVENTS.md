@@ -23,6 +23,7 @@ Every storage operation emits three types of events:
 3. **Failed events** - Triggered when the operation fails
 
 This allows you to:
+
 - Log all storage operations
 - Monitor performance and track durations
 - Validate inputs before operations
@@ -34,31 +35,37 @@ This allows you to:
 ## Event Types
 
 ### Upload Events
+
 - `beforeUpload` - Before a file upload starts
 - `afterUploadSuccess` - After a successful upload
 - `uploadFailed` - When an upload fails
 
 ### Download Events
+
 - `beforeDownload` - Before a file download starts
 - `afterDownloadSuccess` - After a successful download
 - `downloadFailed` - When a download fails
 
 ### Delete Events
+
 - `beforeDelete` - Before a file deletion starts
 - `afterDeleteSuccess` - After a successful deletion
 - `deleteFailed` - When a deletion fails
 
 ### Get Events
+
 - `beforeGet` - Before getting file metadata
 - `afterGetSuccess` - After successfully getting metadata
 - `getFailed` - When getting metadata fails
 
 ### List Events
+
 - `beforeList` - Before listing files
 - `afterListSuccess` - After successfully listing files
 - `listFailed` - When listing fails
 
 ### Exists Events
+
 - `beforeExists` - Before checking if a file exists
 - `afterExistsSuccess` - After successfully checking existence
 - `existsFailed` - When existence check fails
@@ -198,12 +205,14 @@ class StorageLogger {
 
   private log(level: string, event: string, data: any) {
     const timestamp = new Date().toISOString();
-    console.log(JSON.stringify({
-      timestamp,
-      level,
-      event,
-      ...data,
-    }));
+    console.log(
+      JSON.stringify({
+        timestamp,
+        level,
+        event,
+        ...data,
+      }),
+    );
   }
 }
 
@@ -228,7 +237,7 @@ class FileValidationInterceptor {
     options: {
       maxFileSize?: number;
       allowedMimeTypes?: string[];
-    } = {}
+    } = {},
   ) {
     this.maxFileSize = options.maxFileSize || 10 * 1024 * 1024; // 10MB default
     this.allowedMimeTypes = options.allowedMimeTypes || [];
@@ -240,7 +249,7 @@ class FileValidationInterceptor {
       // Validate file size
       if (data.file.size > this.maxFileSize) {
         throw new Error(
-          `File size ${data.file.size} exceeds maximum allowed size ${this.maxFileSize}`
+          `File size ${data.file.size} exceeds maximum allowed size ${this.maxFileSize}`,
         );
       }
 
@@ -249,7 +258,7 @@ class FileValidationInterceptor {
         if (!this.allowedMimeTypes.includes(data.file.mimeType)) {
           throw new Error(
             `File type ${data.file.mimeType} is not allowed. ` +
-            `Allowed types: ${this.allowedMimeTypes.join(', ')}`
+              `Allowed types: ${this.allowedMimeTypes.join(', ')}`,
           );
         }
       }
@@ -261,13 +270,10 @@ class FileValidationInterceptor {
 
 // Usage
 const adapter = storageManager.getDefaultAdapter();
-const validator = new FileValidationInterceptor(
-  adapter.getEventEmitter(),
-  {
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-    allowedMimeTypes: ['image/jpeg', 'image/png', 'application/pdf'],
-  }
-);
+const validator = new FileValidationInterceptor(adapter.getEventEmitter(), {
+  maxFileSize: 5 * 1024 * 1024, // 5MB
+  allowedMimeTypes: ['image/jpeg', 'image/png', 'application/pdf'],
+});
 
 // This will pass validation
 await adapter.upload({
@@ -359,7 +365,7 @@ class PerformanceMonitor {
     existing.avgDuration = existing.totalDuration / existing.count;
     existing.minDuration = Math.min(existing.minDuration, duration);
     existing.maxDuration = Math.max(existing.maxDuration, duration);
-    
+
     if (failed) {
       existing.failures++;
     }
@@ -375,15 +381,15 @@ class PerformanceMonitor {
     console.log('\n📊 Performance Report\n');
     console.log('Operation  | Count | Avg (ms) | Min (ms) | Max (ms) | Failures');
     console.log('-----------|-------|----------|----------|----------|----------');
-    
+
     this.getMetrics().forEach((metric) => {
       console.log(
         `${metric.operation.padEnd(10)} | ` +
-        `${metric.count.toString().padEnd(5)} | ` +
-        `${metric.avgDuration.toFixed(2).padEnd(8)} | ` +
-        `${metric.minDuration.toFixed(2).padEnd(8)} | ` +
-        `${metric.maxDuration.toFixed(2).padEnd(8)} | ` +
-        `${metric.failures}`
+          `${metric.count.toString().padEnd(5)} | ` +
+          `${metric.avgDuration.toFixed(2).padEnd(8)} | ` +
+          `${metric.minDuration.toFixed(2).padEnd(8)} | ` +
+          `${metric.maxDuration.toFixed(2).padEnd(8)} | ` +
+          `${metric.failures}`,
       );
     });
   }
@@ -414,7 +420,7 @@ class RetryHandler {
 
   constructor(
     private eventEmitter: StorageEventEmitter,
-    private maxRetries: number = 3
+    private maxRetries: number = 3,
   ) {
     this.setupRetryLogic();
   }
@@ -426,19 +432,15 @@ class RetryHandler {
 
       if (retries < this.maxRetries) {
         this.retryMap.set(key, retries + 1);
-        console.log(
-          `⚠️ Upload failed, retrying (${retries + 1}/${this.maxRetries})...`
-        );
-        
+        console.log(`⚠️ Upload failed, retrying (${retries + 1}/${this.maxRetries})...`);
+
         // Wait before retry (exponential backoff)
         await this.delay(Math.pow(2, retries) * 1000);
-        
+
         // Note: In a real implementation, you would need to trigger
         // the retry through the adapter reference
       } else {
-        console.error(
-          `❌ Upload failed after ${this.maxRetries} retries`
-        );
+        console.error(`❌ Upload failed after ${this.maxRetries} retries`);
         this.retryMap.delete(key);
       }
     });
@@ -533,7 +535,7 @@ await adapter.upload(
   },
   {
     metadata: { correlationId },
-  }
+  },
 );
 ```
 
@@ -602,7 +604,7 @@ class StorageEventManager {
 
   constructor(adapter: IStorageAdapter) {
     const emitter = adapter.getEventEmitter();
-    
+
     this.logger = new StorageLogger(emitter);
     this.monitor = new PerformanceMonitor(emitter);
     this.validator = new FileValidationInterceptor(emitter, {

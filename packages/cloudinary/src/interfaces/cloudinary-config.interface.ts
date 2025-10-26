@@ -1,6 +1,5 @@
 import { StorageConfig } from '@kolo/core';
 
-
 /**
  * Cloudinary storage configuration
  */
