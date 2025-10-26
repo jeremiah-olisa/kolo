@@ -52,7 +52,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to Azure Blob Storage
    */
-  async upload(_file: StorageFile, _options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(_file: StorageFile, _options?: UploadOptions): Promise<UploadResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -66,7 +66,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from Azure Blob Storage
    */
-  async download(_key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(_key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -80,7 +80,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file from Azure Blob Storage
    */
-  async delete(_key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
+  protected async performDelete(_key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -94,7 +94,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Get file metadata from Azure Blob Storage
    */
-  async get(_key: string): Promise<GetResponse> {
+  protected async performGet(_key: string): Promise<GetResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -108,7 +108,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * List files in Azure Blob Storage
    */
-  async list(_options?: ListOptions): Promise<ListResponse> {
+  protected async performList(_options?: ListOptions): Promise<ListResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -122,7 +122,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in Azure Blob Storage
    */
-  async exists(_key: string): Promise<ExistsResponse> {
+  protected async performExists(_key: string): Promise<ExistsResponse> {
     // Placeholder implementation
     return {
       success: false,

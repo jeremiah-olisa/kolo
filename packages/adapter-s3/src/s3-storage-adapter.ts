@@ -63,7 +63,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to S3
    */
-  async upload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
     try {
       const key = this.getFullKey(options?.key || this.generateFileKey(file.filename));
 
@@ -100,7 +100,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from S3
    */
-  async download(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
@@ -132,7 +132,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file from S3
    */
-  async delete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
+  protected async performDelete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
@@ -155,7 +155,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Get file metadata from S3
    */
-  async get(key: string): Promise<GetResponse> {
+  protected async performGet(key: string): Promise<GetResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
@@ -188,7 +188,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * List files in S3
    */
-  async list(_options?: ListOptions): Promise<ListResponse> {
+  protected async performList(_options?: ListOptions): Promise<ListResponse> {
     try {
       // const prefix = this.getFullKey(options?.prefix || ''); // For future use
 
@@ -228,7 +228,7 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in S3
    */
-  async exists(_key: string): Promise<ExistsResponse> {
+  protected async performExists(_key: string): Promise<ExistsResponse> {
     try {
       // const fullKey = this.getFullKey(key); // For future use
 

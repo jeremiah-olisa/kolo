@@ -69,7 +69,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to Cloudinary
    */
-  async upload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
     try {
       const publicId = options?.key || this.generateFileKey(file.filename);
       // const folder = this.folder; // For future use
@@ -107,7 +107,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from Cloudinary (get URL)
    */
-  async download(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const url = cloudinary.url(key, {
@@ -134,7 +134,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file from Cloudinary
    */
-  async delete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
+  protected async performDelete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const result = await cloudinary.uploader.destroy(key, {
@@ -158,7 +158,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Get file metadata from Cloudinary
    */
-  async get(key: string): Promise<GetResponse> {
+  protected async performGet(key: string): Promise<GetResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const result = await cloudinary.api.resource(key, {
@@ -186,7 +186,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * List files in Cloudinary
    */
-  async list(_options?: ListOptions): Promise<ListResponse> {
+  protected async performList(_options?: ListOptions): Promise<ListResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const result = await cloudinary.api.resources({
@@ -225,7 +225,7 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Check if file exists in Cloudinary
    */
-  async exists(_key: string): Promise<ExistsResponse> {
+  protected async performExists(_key: string): Promise<ExistsResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // try {
