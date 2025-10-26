@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { BaseStorageAdapter } from '../core/base-storage-adapter';
-import { LocalConfig } from '../interfaces/storage-config.interface';
 import {
+  BaseStorageAdapter,
+  LocalConfig,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -16,15 +16,12 @@ import {
   ListResponse,
   ExistsResponse,
   StorageObject,
-} from '../interfaces';
-import {
   StorageConfigurationException,
-  StorageUploadException,
-  StorageDownloadException,
-  StorageDeleteException,
   FileNotFoundException,
-} from '../exceptions';
-import { generateKey, sanitizeFilename, normalizePath } from '../utils';
+  generateKey,
+  sanitizeFilename,
+  normalizePath,
+} from '@kolo/core';
 
 const mkdir = promisify(fs.mkdir);
 const writeFile = promisify(fs.writeFile);
@@ -103,7 +100,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file
    */
-  async download(key: string, options?: DownloadOptions): Promise<DownloadResponse> {
+  async download(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
     try {
       const filePath = this.getFilePath(key);
 
@@ -129,7 +126,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Delete a file
    */
-  async delete(key: string, options?: DeleteOptions): Promise<DeleteResponse> {
+  async delete(key: string, _options?: DeleteOptions): Promise<DeleteResponse> {
     try {
       const filePath = this.getFilePath(key);
 
@@ -234,7 +231,7 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
       await access(dirPath, fs.constants.F_OK);
     } catch (error) {
       const localConfig = this.config as LocalConfig;
-      const options: any = { recursive: true };
+      const options: { recursive: boolean; mode?: number } = { recursive: true };
       
       if (localConfig.directoryPermissions) {
         options.mode = localConfig.directoryPermissions;
@@ -312,7 +309,10 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Handle errors
    */
-  private handleError(error: unknown, defaultMessage: string): any {
+  private handleError(
+    error: unknown,
+    defaultMessage: string,
+  ): UploadResponse | DownloadResponse | DeleteResponse | GetResponse | ListResponse | ExistsResponse {
     if (error instanceof Error) {
       return {
         success: false,
