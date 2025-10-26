@@ -13,6 +13,7 @@ import {
   ListResponse,
   ExistsResponse,
 } from './storage-response.interface';
+import { StorageEventEmitter } from '../events';
 
 /**
  * Core interface that all storage adapters must implement
@@ -72,4 +73,14 @@ export interface IStorageAdapter {
    * Check if the adapter is properly configured and ready
    */
   isReady(): boolean;
+
+  /**
+   * Get the event emitter for this adapter
+   */
+  getEventEmitter(): StorageEventEmitter;
+
+  /**
+   * Set a custom event emitter
+   */
+  setEventEmitter(emitter: StorageEventEmitter): void;
 }

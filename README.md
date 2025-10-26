@@ -185,6 +185,75 @@ kolo-monorepo/
 - 📦 **Modular Architecture** - Individual packages for each adapter with minimal dependencies
 - 🎯 **Type-Safe** - Full TypeScript support
 - 🔧 **Extensible** - Easy to add custom storage adapters
+- 📡 **Event System** - Comprehensive event hooks for all storage operations
+- 🔍 **Interceptors** - Validate and transform data before operations
+- 📊 **Built-in Monitoring** - Track performance and create custom loggers
+
+## 📡 Event System
+
+Kolo provides a powerful event system that allows you to listen to and intercept all storage operations. Perfect for logging, monitoring, validation, and custom business logic.
+
+```typescript
+import { StorageEvent } from '@kolo/core';
+
+const adapter = storageManager.getDefaultAdapter();
+const events = adapter.getEventEmitter();
+
+// Listen to upload events
+events.on(StorageEvent.BEFORE_UPLOAD, (data) => {
+  console.log(`Uploading: ${data.file.filename}`);
+});
+
+events.on(StorageEvent.AFTER_UPLOAD_SUCCESS, (data) => {
+  console.log(`Uploaded: ${data.response.key} (${data.duration}ms)`);
+});
+
+events.on(StorageEvent.UPLOAD_FAILED, (data) => {
+  console.error(`Upload failed: ${data.error.message}`);
+});
+```
+
+### Available Events
+
+Every storage operation emits three types of events:
+
+**Upload Events:** `beforeUpload`, `afterUploadSuccess`, `uploadFailed`  
+**Download Events:** `beforeDownload`, `afterDownloadSuccess`, `downloadFailed`  
+**Delete Events:** `beforeDelete`, `afterDeleteSuccess`, `deleteFailed`  
+**Get Events:** `beforeGet`, `afterGetSuccess`, `getFailed`  
+**List Events:** `beforeList`, `afterListSuccess`, `listFailed`  
+**Exists Events:** `beforeExists`, `afterExistsSuccess`, `existsFailed`
+
+### Use Cases
+
+- **Logging** - Track all storage operations
+- **Validation** - Validate files before upload (size, type, etc.)
+- **Performance Monitoring** - Track operation durations and success rates
+- **Security Auditing** - Log security-relevant operations
+- **Custom Business Logic** - Trigger workflows based on storage events
+
+See [EVENTS.md](./EVENTS.md) for complete documentation and examples.
+
+## 📚 Examples
+
+The repository includes comprehensive examples:
+
+- **[Basic Example](./examples/basic)** - Getting started with Kolo storage
+- **[Events Example](./examples/events)** - Complete event system usage
+  - Logger implementation
+  - File validation interceptor
+  - Performance monitoring
+
+Run examples:
+
+```bash
+cd examples/events
+pnpm install
+pnpm start           # Basic events example
+pnpm start:logger    # Logger example
+pnpm start:interceptor  # Validation example
+pnpm start:monitor   # Performance monitoring
+```
 
 ## 🤝 Contributing
 
