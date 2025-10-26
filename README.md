@@ -21,9 +21,6 @@ This is a monorepo containing the Kolo storage packages and examples.
 # Install dependencies
 pnpm install
 
-# Bootstrap packages
-pnpm run bootstrap
-
 # Build all packages
 pnpm run build
 ```
@@ -34,7 +31,7 @@ pnpm run build
 
 ```bash
 # Install dependencies for all packages
-pnpm run bootstrap
+pnpm install
 
 # Build all packages
 pnpm run build
