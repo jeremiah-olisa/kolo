@@ -1,6 +1,5 @@
 import {
   BaseStorageAdapter,
-  S3Config,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -17,6 +16,7 @@ import {
   generateKey,
   sanitizeFilename,
 } from '@kolo/core';
+import { S3Config } from './interfaces';
 
 /**
  * AWS S3 storage adapter
@@ -27,19 +27,19 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   private readonly bucket: string;
   private readonly region: string;
   private readonly basePath?: string;
-
+  protected static readonly ADAPTER_NAME = 'S3';
   constructor(config: S3Config) {
-    super(config, 'S3');
+    super(config, S3StorageAdapter.ADAPTER_NAME);
 
     if (!config.bucket) {
       throw new StorageConfigurationException('Bucket name is required for S3 storage', {
-        provider: 'S3',
+        provider: S3StorageAdapter.ADAPTER_NAME,
       });
     }
 
     if (!config.region) {
       throw new StorageConfigurationException('Region is required for S3 storage', {
-        provider: 'S3',
+        provider: S3StorageAdapter.ADAPTER_NAME,
       });
     }
 
@@ -63,7 +63,10 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to S3
    */
-  protected async performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(
+    file: StorageFile,
+    options?: UploadOptions,
+  ): Promise<UploadResponse> {
     try {
       const key = this.getFullKey(options?.key || this.generateFileKey(file.filename));
 
@@ -100,7 +103,10 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from S3
    */
-  protected async performDownload(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(
+    key: string,
+    _options?: DownloadOptions,
+  ): Promise<DownloadResponse> {
     try {
       const fullKey = this.getFullKey(key);
 
@@ -301,7 +307,13 @@ export class S3StorageAdapter extends BaseStorageAdapter {
   private handleError(
     error: unknown,
     defaultMessage: string,
-  ): UploadResponse | DownloadResponse | DeleteResponse | GetResponse | ListResponse | ExistsResponse {
+  ):
+    | UploadResponse
+    | DownloadResponse
+    | DeleteResponse
+    | GetResponse
+    | ListResponse
+    | ExistsResponse {
     if (error instanceof Error) {
       return {
         success: false,

@@ -20,7 +20,7 @@ This document provides comprehensive examples of how to use Kolo storage adapter
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 // Create storage manager
 const storageManager = new StorageManager();
@@ -48,9 +48,9 @@ Set up multiple storage adapters with automatic fallback support:
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
-import { S3StorageAdapter } from '@kolo/adapter-s3';
-import { CloudinaryStorageAdapter } from '@kolo/adapter-cloudinary';
+import { LocalStorageAdapter } from '@kolo/local';
+import { S3StorageAdapter } from '@kolo/s3';
+import { CloudinaryStorageAdapter } from '@kolo/cloudinary';
 
 const storageManager = new StorageManager({
   defaultAdapter: 's3',
@@ -110,7 +110,7 @@ const adapter = storageManager.getAdapterWithFallback('s3');
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 const storageManager = new StorageManager({
   adapters: [
@@ -135,7 +135,7 @@ storageManager.registerFactory('local', (config) => {
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 const storageManager = new StorageManager();
 
@@ -430,7 +430,7 @@ if (fileInfo.success && fileInfo.object) {
 import express from 'express';
 import multer from 'multer';
 import { StorageManager } from '@kolo/core';
-import { S3StorageAdapter } from '@kolo/adapter-s3';
+import { S3StorageAdapter } from '@kolo/s3';
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });

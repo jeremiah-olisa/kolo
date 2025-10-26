@@ -1,7 +1,7 @@
 {
-  "name": "@kolo/adapter-s3",
+  "name": "@kolo/cloudinary",
   "version": "1.0.0-alpha.1",
-  "description": "AWS S3 storage adapter for Kolo",
+  "description": "Cloudinary storage adapter for Kolo",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -16,8 +16,7 @@
   },
   "keywords": [
     "storage",
-    "s3",
-    "aws",
+    "cloudinary",
     "file-storage",
     "kolo",
     "adapter"
@@ -31,14 +30,10 @@
     "@kolo/core": "workspace:*"
   },
   "peerDependencies": {
-    "@aws-sdk/client-s3": "^3.0.0",
-    "@aws-sdk/s3-request-presigner": "^3.0.0"
+    "cloudinary": "^1.40.0"
   },
   "peerDependenciesMeta": {
-    "@aws-sdk/client-s3": {
-      "optional": true
-    },
-    "@aws-sdk/s3-request-presigner": {
+    "cloudinary": {
       "optional": true
     }
   },

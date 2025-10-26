@@ -1,15 +1,15 @@
-# @kolo/adapter-azure
+# @kolo/azure
 
 Azure Blob Storage adapter for Kolo.
 
 ## Installation
 
 ```bash
-npm install @kolo/adapter-azure @kolo/core
+npm install @kolo/azure @kolo/core
 # or
-pnpm add @kolo/adapter-azure @kolo/core
+pnpm add @kolo/azure @kolo/core
 # or
-yarn add @kolo/adapter-azure @kolo/core
+yarn add @kolo/azure @kolo/core
 ```
 
 For full functionality, you'll also need the Azure SDK:
@@ -24,7 +24,7 @@ npm install @azure/storage-blob
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { AzureStorageAdapter } from '@kolo/adapter-azure';
+import { AzureStorageAdapter } from '@kolo/azure';
 
 // Create storage manager
 const storageManager = new StorageManager();
@@ -49,7 +49,7 @@ storageManager.registerAdapter('azure', azureAdapter);
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { AzureStorageAdapter } from '@kolo/adapter-azure';
+import { AzureStorageAdapter } from '@kolo/azure';
 
 const storageManager = new StorageManager({
   defaultAdapter: 'azure',

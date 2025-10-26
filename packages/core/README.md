@@ -21,17 +21,17 @@ Secure storage adapter for documents and files (Kolo means "piggybank" or "secur
 npm install @kolo/core
 
 # Install storage adapters as needed
-npm install @kolo/adapter-local
-npm install @kolo/adapter-s3
-npm install @kolo/adapter-azure
-npm install @kolo/adapter-cloudinary
+npm install @kolo/local
+npm install @kolo/s3
+npm install @kolo/azure
+npm install @kolo/cloudinary
 ```
 
 ## Quick Start
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 // Create storage manager
 const storageManager = new StorageManager({
@@ -113,10 +113,10 @@ See the [complete events documentation](../../EVENTS.md) for more examples.
 
 ## Related Packages
 
-- [@kolo/adapter-local](../adapter-local) - Local filesystem storage
-- [@kolo/adapter-s3](../adapter-s3) - AWS S3 storage
-- [@kolo/adapter-azure](../adapter-azure) - Azure Blob Storage
-- [@kolo/adapter-cloudinary](../adapter-cloudinary) - Cloudinary storage
+- [@kolo/local](../adapter-local) - Local filesystem storage
+- [@kolo/s3](../adapter-s3) - AWS S3 storage
+- [@kolo/azure](../adapter-azure) - Azure Blob Storage
+- [@kolo/cloudinary](../adapter-cloudinary) - Cloudinary storage
 
 ## License
 

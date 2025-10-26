@@ -1,5 +1,5 @@
 {
-  "name": "@kolo/adapter-local",
+  "name": "@kolo/local",
   "version": "1.0.0-alpha.1",
   "description": "Local filesystem storage adapter for Kolo",
   "main": "dist/index.js",

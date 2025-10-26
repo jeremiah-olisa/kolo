@@ -1,15 +1,15 @@
-# @kolo/adapter-local
+# @kolo/local
 
 Local filesystem storage adapter for Kolo.
 
 ## Installation
 
 ```bash
-npm install @kolo/adapter-local @kolo/core
+npm install @kolo/local @kolo/core
 # or
-pnpm add @kolo/adapter-local @kolo/core
+pnpm add @kolo/local @kolo/core
 # or
-yarn add @kolo/adapter-local @kolo/core
+yarn add @kolo/local @kolo/core
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ yarn add @kolo/adapter-local @kolo/core
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 // Create storage manager
 const storageManager = new StorageManager();
@@ -43,7 +43,7 @@ storageManager.registerAdapter('local', localAdapter);
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 const storageManager = new StorageManager({
   defaultAdapter: 'local',

@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@kolo/core": "workspace:*",
-    "@kolo/adapter-local": "workspace:*"
+    "@kolo/local": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",

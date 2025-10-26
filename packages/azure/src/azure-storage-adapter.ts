@@ -1,6 +1,5 @@
 import {
   BaseStorageAdapter,
-  AzureConfig,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -14,6 +13,7 @@ import {
   ExistsResponse,
   StorageConfigurationException,
 } from '@kolo/core';
+import { AzureConfig } from './interfaces';
 
 /**
  * Azure Blob Storage adapter (placeholder)
@@ -22,13 +22,13 @@ import {
  */
 export class AzureStorageAdapter extends BaseStorageAdapter {
   private readonly containerName: string;
-
+  protected static readonly ADAPTER_NAME = 'Azure';
   constructor(config: AzureConfig) {
-    super(config, 'Azure');
+    super(config, AzureStorageAdapter.ADAPTER_NAME);
 
     if (!config.containerName) {
       throw new StorageConfigurationException('Container name is required for Azure storage', {
-        provider: 'Azure',
+        provider: AzureStorageAdapter.ADAPTER_NAME,
       });
     }
 
@@ -36,7 +36,7 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
       throw new StorageConfigurationException(
         'Either connectionString or accountName/accountKey is required for Azure storage',
         {
-          provider: 'Azure',
+          provider: AzureStorageAdapter.ADAPTER_NAME,
         },
       );
     }
@@ -52,7 +52,10 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to Azure Blob Storage
    */
-  protected async performUpload(_file: StorageFile, _options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(
+    _file: StorageFile,
+    _options?: UploadOptions,
+  ): Promise<UploadResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -66,7 +69,10 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from Azure Blob Storage
    */
-  protected async performDownload(_key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(
+    _key: string,
+    _options?: DownloadOptions,
+  ): Promise<DownloadResponse> {
     // Placeholder implementation
     return {
       success: false,
@@ -138,6 +144,9 @@ export class AzureStorageAdapter extends BaseStorageAdapter {
    */
   isReady(): boolean {
     const config = this.config as AzureConfig;
-    return !!(config.containerName && (config.connectionString || (config.accountName && config.accountKey)));
+    return !!(
+      config.containerName &&
+      (config.connectionString || (config.accountName && config.accountKey))
+    );
   }
 }

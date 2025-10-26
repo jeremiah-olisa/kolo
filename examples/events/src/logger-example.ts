@@ -6,7 +6,7 @@
  */
 
 import { StorageManager, StorageEventEmitter, StorageEvent, LocalConfig } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 import * as path from 'path';
 
 /**

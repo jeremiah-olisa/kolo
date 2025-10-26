@@ -69,7 +69,7 @@ This allows you to:
 
 ```typescript
 import { StorageManager, StorageEvent } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 
 // Create storage manager
 const storageManager = new StorageManager({

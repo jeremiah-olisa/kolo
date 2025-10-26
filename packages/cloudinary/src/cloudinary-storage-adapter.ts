@@ -1,6 +1,5 @@
 import {
   BaseStorageAdapter,
-  CloudinaryConfig,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -17,6 +16,7 @@ import {
   generateKey,
   sanitizeFilename,
 } from '@kolo/core';
+import { CloudinaryConfig } from './interfaces';
 
 /**
  * Cloudinary storage adapter
@@ -28,25 +28,26 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   private readonly apiKey: string;
   private readonly folder?: string;
   private readonly secure: boolean;
+  protected static readonly ADAPTER_NAME = 'Cloudinary';
 
   constructor(config: CloudinaryConfig) {
-    super(config, 'Cloudinary');
+    super(config, CloudinaryStorageAdapter.ADAPTER_NAME);
 
     if (!config.cloudName) {
       throw new StorageConfigurationException('Cloud name is required for Cloudinary storage', {
-        provider: 'Cloudinary',
+        provider: CloudinaryStorageAdapter.ADAPTER_NAME,
       });
     }
 
     if (!config.apiKey) {
       throw new StorageConfigurationException('API key is required for Cloudinary storage', {
-        provider: 'Cloudinary',
+        provider: CloudinaryStorageAdapter.ADAPTER_NAME,
       });
     }
 
     if (!config.apiSecret) {
       throw new StorageConfigurationException('API secret is required for Cloudinary storage', {
-        provider: 'Cloudinary',
+        provider: CloudinaryStorageAdapter.ADAPTER_NAME,
       });
     }
 
@@ -69,7 +70,10 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file to Cloudinary
    */
-  protected async performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(
+    file: StorageFile,
+    options?: UploadOptions,
+  ): Promise<UploadResponse> {
     try {
       const publicId = options?.key || this.generateFileKey(file.filename);
       // const folder = this.folder; // For future use
@@ -107,7 +111,10 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file from Cloudinary (get URL)
    */
-  protected async performDownload(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(
+    key: string,
+    _options?: DownloadOptions,
+  ): Promise<DownloadResponse> {
     try {
       // Note: This is a placeholder. In a real implementation, you would use:
       // const url = cloudinary.url(key, {
@@ -294,7 +301,13 @@ export class CloudinaryStorageAdapter extends BaseStorageAdapter {
   private handleError(
     error: unknown,
     defaultMessage: string,
-  ): UploadResponse | DownloadResponse | DeleteResponse | GetResponse | ListResponse | ExistsResponse {
+  ):
+    | UploadResponse
+    | DownloadResponse
+    | DeleteResponse
+    | GetResponse
+    | ListResponse
+    | ExistsResponse {
     if (error instanceof Error) {
       return {
         success: false,

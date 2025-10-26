@@ -1,12 +1,12 @@
 /**
  * Performance Monitor Example: Track and Analyze Storage Performance
- * 
+ *
  * This example demonstrates how to monitor performance metrics
  * for all storage operations.
  */
 
-import { StorageManager, StorageEventEmitter, StorageEvent, LocalConfig } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { StorageManager, StorageEventEmitter, StorageEvent } from '@kolo/core';
+import { LocalStorageAdapter, LocalConfig } from '@kolo/local';
 import * as path from 'path';
 
 interface PerformanceMetrics {
@@ -116,7 +116,7 @@ class PerformanceMonitor {
     existing.avgDuration = existing.totalDuration / existing.count;
     existing.minDuration = Math.min(existing.minDuration, duration);
     existing.maxDuration = Math.max(existing.maxDuration, duration);
-    
+
     if (failed) {
       existing.failures++;
     }
@@ -143,9 +143,9 @@ class PerformanceMonitor {
     console.log('═════════════════════════════════════════════════════════════════════════');
     console.log('Operation  | Count | Avg (ms) | Min (ms) | Max (ms) | Failures | Success Rate');
     console.log('───────────|-------|----------|----------|----------|----------|─────────────');
-    
+
     const metrics = this.getMetrics();
-    
+
     if (metrics.length === 0) {
       console.log('No operations recorded yet');
     } else {
@@ -153,24 +153,27 @@ class PerformanceMonitor {
         const operation = metric.operation.padEnd(10);
         const count = metric.count.toString().padEnd(5);
         const avg = metric.avgDuration.toFixed(2).padEnd(8);
-        const min = metric.minDuration === Infinity ? 'N/A'.padEnd(8) : metric.minDuration.toFixed(2).padEnd(8);
+        const min =
+          metric.minDuration === Infinity
+            ? 'N/A'.padEnd(8)
+            : metric.minDuration.toFixed(2).padEnd(8);
         const max = metric.maxDuration.toFixed(2).padEnd(8);
         const failures = metric.failures.toString().padEnd(8);
         const successRate = `${metric.successRate.toFixed(1)}%`;
-        
+
         console.log(
-          `${operation} | ${count} | ${avg} | ${min} | ${max} | ${failures} | ${successRate}`
+          `${operation} | ${count} | ${avg} | ${min} | ${max} | ${failures} | ${successRate}`,
         );
       });
     }
-    
+
     console.log('═════════════════════════════════════════════════════════════════════════');
-    
+
     // Print summary
     const totalOps = metrics.reduce((sum, m) => sum + m.count, 0);
     const totalFailures = metrics.reduce((sum, m) => sum + m.failures, 0);
     const overallSuccessRate = totalOps > 0 ? ((totalOps - totalFailures) / totalOps) * 100 : 0;
-    
+
     console.log(`\nTotal Operations: ${totalOps}`);
     console.log(`Total Failures: ${totalFailures}`);
     console.log(`Overall Success Rate: ${overallSuccessRate.toFixed(1)}%\n`);
@@ -178,9 +181,9 @@ class PerformanceMonitor {
 
   printDetailedMetrics() {
     console.log('\n📈 Detailed Performance Metrics\n');
-    
+
     const metrics = this.getMetrics();
-    
+
     metrics.forEach((metric) => {
       console.log(`\n${metric.operation.toUpperCase()} Operations:`);
       console.log('─────────────────────────────');
@@ -189,7 +192,9 @@ class PerformanceMonitor {
       console.log(`  Failures: ${metric.failures}`);
       console.log(`  Success Rate: ${metric.successRate.toFixed(1)}%`);
       console.log(`  Average Duration: ${metric.avgDuration.toFixed(2)}ms`);
-      console.log(`  Min Duration: ${metric.minDuration === Infinity ? 'N/A' : metric.minDuration.toFixed(2) + 'ms'}`);
+      console.log(
+        `  Min Duration: ${metric.minDuration === Infinity ? 'N/A' : metric.minDuration.toFixed(2) + 'ms'}`,
+      );
       console.log(`  Max Duration: ${metric.maxDuration.toFixed(2)}ms`);
       console.log(`  Total Duration: ${metric.totalDuration.toFixed(2)}ms`);
     });
@@ -276,7 +281,7 @@ async function main() {
     console.log('\n✅ All performance tests completed successfully!');
   } catch (error) {
     console.error('\n❌ Test failed:', error);
-    
+
     // Still print the report to see what was measured
     monitor.printReport();
   }

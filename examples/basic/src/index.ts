@@ -1,6 +1,6 @@
 /**
  * Basic Example: Using Kolo Storage with Multiple Adapters
- * 
+ *
  * This example demonstrates:
  * 1. Setting up a StorageManager with multiple adapters
  * 2. Registering adapters using the factory pattern
@@ -9,9 +9,8 @@
  */
 
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalConfig, LocalStorageAdapter } from '@kolo/local';
 import * as path from 'path';
-import * as fs from 'fs';
 
 async function main() {
   console.log('🎯 Kolo Storage - Basic Example\n');
@@ -20,7 +19,7 @@ async function main() {
   // 1. Setup Storage Manager
   // ========================================
   console.log('📦 Setting up Storage Manager...');
-  
+
   const storageManager = new StorageManager({
     defaultAdapter: 'local',
     enableFallback: false,
@@ -41,7 +40,7 @@ async function main() {
   });
 
   // Register adapter factory
-  storageManager.registerFactory('local', (config) => {
+  storageManager.registerFactory<LocalConfig>('local', (config) => {
     console.log('   ✓ Registering Local Storage adapter');
     return new LocalStorageAdapter(config);
   });
@@ -58,7 +57,7 @@ async function main() {
   // 3. Upload a File
   // ========================================
   console.log('\n📤 Uploading a test file...');
-  
+
   const testContent = `Hello from Kolo Storage!
   
 This is a test file created at ${new Date().toISOString()}
@@ -89,7 +88,7 @@ Features:
         timestamp: new Date().toISOString(),
         category: 'test',
       },
-    }
+    },
   );
 
   if (uploadResult.success) {
@@ -108,9 +107,9 @@ Features:
   // 4. Check if File Exists
   // ========================================
   console.log('\n🔍 Checking if file exists...');
-  
+
   const existsResult = await adapter.exists(fileKey);
-  
+
   if (existsResult.success) {
     console.log(`   ✓ File exists: ${existsResult.exists}`);
   }
@@ -119,9 +118,9 @@ Features:
   // 5. Get File Metadata
   // ========================================
   console.log('\n📋 Getting file metadata...');
-  
+
   const getResult = await adapter.get(fileKey);
-  
+
   if (getResult.success && getResult.object) {
     console.log('   ✓ Metadata retrieved:');
     console.log(`   • Key: ${getResult.object.key}`);
@@ -133,13 +132,13 @@ Features:
   // 6. Download/Read the File
   // ========================================
   console.log('\n📥 Downloading file...');
-  
+
   const downloadResult = await adapter.download(fileKey);
-  
+
   if (downloadResult.success) {
     console.log('   ✓ Download successful!');
     console.log(`   • URL: ${downloadResult.url}`);
-    
+
     if (downloadResult.content) {
       const content = downloadResult.content.toString('utf-8');
       console.log(`   • Content preview: "${content.substring(0, 50)}..."`);
@@ -150,11 +149,11 @@ Features:
   // 7. List Files
   // ========================================
   console.log('\n📝 Listing files...');
-  
+
   const listResult = await adapter.list({
     maxKeys: 10,
   });
-  
+
   if (listResult.success && listResult.result) {
     console.log(`   ✓ Found ${listResult.result.objects.length} file(s):`);
     listResult.result.objects.forEach((file, index) => {
@@ -166,13 +165,17 @@ Features:
   // 8. Upload Another File
   // ========================================
   console.log('\n📤 Uploading another test file...');
-  
-  const jsonContent = JSON.stringify({
-    name: 'Kolo Storage Example',
-    version: '1.0.0',
-    features: ['multi-adapter', 'fallback', 'type-safe'],
-    timestamp: new Date().toISOString(),
-  }, null, 2);
+
+  const jsonContent = JSON.stringify(
+    {
+      name: 'Kolo Storage Example',
+      version: '1.0.0',
+      features: ['multi-adapter', 'fallback', 'type-safe'],
+      timestamp: new Date().toISOString(),
+    },
+    null,
+    2,
+  );
 
   const jsonUploadResult = await adapter.upload({
     filename: 'config.json',
@@ -190,9 +193,9 @@ Features:
   // 9. List Files Again
   // ========================================
   console.log('\n📝 Listing all files...');
-  
+
   const listResult2 = await adapter.list();
-  
+
   if (listResult2.success && listResult2.result) {
     console.log(`   ✓ Total files: ${listResult2.result.objects.length}`);
     listResult2.result.objects.forEach((file, index) => {
@@ -206,7 +209,7 @@ Features:
   console.log('\n🗑️  Cleanup (skipped - files kept for inspection)');
   console.log('   ℹ️  Files are stored in: examples/basic/temp-uploads/');
   console.log('   ℹ️  To cleanup manually, delete the temp-uploads directory');
-  
+
   /*
   // Uncomment to delete uploaded files
   console.log('\n🗑️  Deleting uploaded files...');

@@ -1,15 +1,15 @@
-# @kolo/adapter-cloudinary
+# @kolo/cloudinary
 
 Cloudinary storage adapter for Kolo.
 
 ## Installation
 
 ```bash
-npm install @kolo/adapter-cloudinary @kolo/core
+npm install @kolo/cloudinary @kolo/core
 # or
-pnpm add @kolo/adapter-cloudinary @kolo/core
+pnpm add @kolo/cloudinary @kolo/core
 # or
-yarn add @kolo/adapter-cloudinary @kolo/core
+yarn add @kolo/cloudinary @kolo/core
 ```
 
 For full functionality, you'll also need the Cloudinary SDK:
@@ -24,7 +24,7 @@ npm install cloudinary
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { CloudinaryStorageAdapter } from '@kolo/adapter-cloudinary';
+import { CloudinaryStorageAdapter } from '@kolo/cloudinary';
 
 // Create storage manager
 const storageManager = new StorageManager();
@@ -50,7 +50,7 @@ storageManager.registerAdapter('cloudinary', cloudinaryAdapter);
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { CloudinaryStorageAdapter } from '@kolo/adapter-cloudinary';
+import { CloudinaryStorageAdapter } from '@kolo/cloudinary';
 
 const storageManager = new StorageManager({
   defaultAdapter: 'cloudinary',

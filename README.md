@@ -7,10 +7,10 @@ This is a monorepo containing the Kolo storage packages with support for multipl
 ## 📦 Packages
 
 - **[@kolo/core](./packages/core)** - Core storage manager with interfaces and base classes
-- **[@kolo/adapter-local](./packages/adapter-local)** - Local filesystem storage adapter
-- **[@kolo/adapter-s3](./packages/adapter-s3)** - AWS S3 storage adapter
-- **[@kolo/adapter-cloudinary](./packages/adapter-cloudinary)** - Cloudinary storage adapter
-- **[@kolo/adapter-azure](./packages/adapter-azure)** - Azure Blob Storage adapter
+- **[@kolo/local](./packages/adapter-local)** - Local filesystem storage adapter
+- **[@kolo/s3](./packages/adapter-s3)** - AWS S3 storage adapter
+- **[@kolo/cloudinary](./packages/adapter-cloudinary)** - Cloudinary storage adapter
+- **[@kolo/azure](./packages/adapter-azure)** - Azure Blob Storage adapter
 
 ## 🚀 Getting Started
 
@@ -33,8 +33,8 @@ pnpm run build
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
-import { S3StorageAdapter } from '@kolo/adapter-s3';
+import { LocalStorageAdapter } from '@kolo/local';
+import { S3StorageAdapter } from '@kolo/s3';
 
 // Create storage manager with multiple adapters and fallback support
 const storageManager = new StorageManager({
@@ -165,10 +165,10 @@ pnpm run release:alpha
 kolo-monorepo/
 ├── packages/
 │   ├── core/               # @kolo/core - Core storage manager
-│   ├── adapter-local/      # @kolo/adapter-local - Local filesystem adapter
-│   ├── adapter-s3/         # @kolo/adapter-s3 - AWS S3 adapter
-│   ├── adapter-cloudinary/ # @kolo/adapter-cloudinary - Cloudinary adapter
-│   └── adapter-azure/      # @kolo/adapter-azure - Azure Blob Storage adapter
+│   ├── adapter-local/      # @kolo/local - Local filesystem adapter
+│   ├── adapter-s3/         # @kolo/s3 - AWS S3 adapter
+│   ├── adapter-cloudinary/ # @kolo/cloudinary - Cloudinary adapter
+│   └── adapter-azure/      # @kolo/azure - Azure Blob Storage adapter
 ├── examples/               # Example applications
 ├── package.json            # Root package.json
 ├── pnpm-workspace.yaml     # PNPM workspace configuration

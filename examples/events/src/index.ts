@@ -1,6 +1,6 @@
 /**
  * Kolo Storage Events - Complete Example
- * 
+ *
  * This example demonstrates all the event capabilities of Kolo storage:
  * - Event listening
  * - Logging
@@ -8,8 +8,8 @@
  * - Performance monitoring
  */
 
-import { StorageManager, StorageEventEmitter, StorageEvent, LocalConfig } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { StorageManager, StorageEvent } from '@kolo/core';
+import { LocalConfig, LocalStorageAdapter } from '@kolo/local';
 import * as path from 'path';
 
 async function main() {
@@ -20,7 +20,7 @@ async function main() {
   // 1. Setup Storage Manager
   // ========================================
   console.log('📦 Setting up Storage Manager...');
-  
+
   const storageManager = new StorageManager({
     defaultAdapter: 'local',
     adapters: [
@@ -64,7 +64,9 @@ async function main() {
   });
 
   events.on(StorageEvent.UPLOAD_FAILED, (data) => {
-    console.log(`   ❌ UPLOAD_FAILED: ${data.file.filename} - ${data.error.message} (${data.duration}ms)`);
+    console.log(
+      `   ❌ UPLOAD_FAILED: ${data.file.filename} - ${data.error.message} (${data.duration}ms)`,
+    );
   });
 
   // Listen to download events
@@ -98,7 +100,9 @@ async function main() {
 
   // Listen to exists events
   events.on(StorageEvent.AFTER_EXISTS_SUCCESS, (data) => {
-    console.log(`   ✅ AFTER_EXISTS_SUCCESS: ${data.key} exists=${data.response.exists} (${data.duration}ms)`);
+    console.log(
+      `   ✅ AFTER_EXISTS_SUCCESS: ${data.key} exists=${data.response.exists} (${data.duration}ms)`,
+    );
   });
 
   console.log('✓ Event listeners registered\n');
@@ -113,46 +117,49 @@ async function main() {
   try {
     // Upload multiple files
     console.log('📤 Uploading files...\n');
-    
+
     for (let i = 1; i <= 3; i++) {
       const content = `Example file #${i}\nCreated at: ${new Date().toISOString()}\n`;
-      const result = await adapter.upload({
-        filename: `example-${i}.txt`,
-        content: Buffer.from(content),
-        mimeType: 'text/plain',
-        size: Buffer.byteLength(content),
-      }, {
-        metadata: {
-          category: 'example',
-          index: i,
+      const result = await adapter.upload(
+        {
+          filename: `example-${i}.txt`,
+          content: Buffer.from(content),
+          mimeType: 'text/plain',
+          size: Buffer.byteLength(content),
         },
-      });
+        {
+          metadata: {
+            category: 'example',
+            index: i,
+          },
+        },
+      );
 
       files.push(result.key!);
     }
 
     console.log('\n📥 Downloading files...\n');
-    
+
     for (const key of files) {
       await adapter.download(key);
     }
 
     console.log('\n📋 Getting file metadata...\n');
-    
+
     for (const key of files) {
       await adapter.get(key);
     }
 
     console.log('\n🔍 Checking file existence...\n');
-    
+
     for (const key of files) {
       await adapter.exists(key);
     }
 
     console.log('\n📝 Listing all files...\n');
-    
+
     const listResult = await adapter.list({ maxKeys: 10 });
-    
+
     if (listResult.success && listResult.result) {
       console.log(`\n   Found ${listResult.result.objects.length} files:`);
       listResult.result.objects.forEach((file, index) => {
@@ -161,13 +168,12 @@ async function main() {
     }
 
     console.log('\n🗑️  Deleting files...\n');
-    
+
     for (const key of files) {
       await adapter.delete(key);
     }
 
     console.log('\n✨ All operations completed successfully!');
-
   } catch (error) {
     console.error('\n❌ Error:', error);
   }
@@ -178,7 +184,7 @@ async function main() {
   console.log('\n═══════════════════════════════════════════════════');
   console.log('📊 Summary');
   console.log('═══════════════════════════════════════════════════\n');
-  
+
   console.log('Events demonstrated:');
   console.log('  ✓ beforeUpload / afterUploadSuccess');
   console.log('  ✓ beforeDownload / afterDownloadSuccess');

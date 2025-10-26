@@ -1,12 +1,12 @@
 /**
  * Interceptor Example: File Validation and Custom Logic
- * 
+ *
  * This example demonstrates how to create interceptors that validate
  * files before upload and implement custom business logic.
  */
 
-import { StorageManager, StorageEventEmitter, StorageEvent, LocalConfig } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { StorageManager, StorageEventEmitter, StorageEvent } from '@kolo/core';
+import { LocalConfig, LocalStorageAdapter } from '@kolo/local';
 import * as path from 'path';
 
 /**
@@ -24,7 +24,7 @@ class FileValidationInterceptor {
       maxFileSize?: number;
       allowedMimeTypes?: string[];
       blockedFilenames?: string[];
-    } = {}
+    } = {},
   ) {
     this.maxFileSize = options.maxFileSize || 10 * 1024 * 1024; // 10MB default
     this.allowedMimeTypes = options.allowedMimeTypes || [];
@@ -39,7 +39,7 @@ class FileValidationInterceptor {
       // Validate file size
       if (data.file.size > this.maxFileSize) {
         const error = new Error(
-          `File size ${data.file.size} bytes exceeds maximum allowed size ${this.maxFileSize} bytes`
+          `File size ${data.file.size} bytes exceeds maximum allowed size ${this.maxFileSize} bytes`,
         );
         console.error(`❌ ${error.message}`);
         throw error;
@@ -51,7 +51,7 @@ class FileValidationInterceptor {
         if (!this.allowedMimeTypes.includes(data.file.mimeType)) {
           const error = new Error(
             `File type ${data.file.mimeType} is not allowed. ` +
-            `Allowed types: ${this.allowedMimeTypes.join(', ')}`
+              `Allowed types: ${this.allowedMimeTypes.join(', ')}`,
           );
           console.error(`❌ ${error.message}`);
           throw error;
@@ -132,7 +132,7 @@ class SecurityAuditInterceptor {
   printAuditReport() {
     console.log('\n📋 Security Audit Report\n');
     console.log('═══════════════════════════════════════════════════\n');
-    
+
     this.auditLog.forEach((entry, index) => {
       console.log(`Entry #${index + 1}`);
       console.log(`Time: ${entry.timestamp.toISOString()}`);
@@ -140,7 +140,7 @@ class SecurityAuditInterceptor {
       console.log(`Details:`, entry.details);
       console.log('');
     });
-    
+
     console.log('═══════════════════════════════════════════════════');
   }
 }
@@ -177,7 +177,7 @@ async function main() {
   // Setup interceptors
   console.log('⚙️  Setting up interceptors...\n');
 
-  const validator = new FileValidationInterceptor(events, {
+  const _validator = new FileValidationInterceptor(events, {
     maxFileSize: 5 * 1024 * 1024, // 5MB
     allowedMimeTypes: ['text/plain', 'application/json', 'image/png', 'image/jpeg'],
     blockedFilenames: ['forbidden.txt', 'malware.exe'],

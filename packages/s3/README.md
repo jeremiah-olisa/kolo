@@ -1,15 +1,15 @@
-# @kolo/adapter-s3
+# @kolo/s3
 
 AWS S3 storage adapter for Kolo.
 
 ## Installation
 
 ```bash
-npm install @kolo/adapter-s3 @kolo/core
+npm install @kolo/s3 @kolo/core
 # or
-pnpm add @kolo/adapter-s3 @kolo/core
+pnpm add @kolo/s3 @kolo/core
 # or
-yarn add @kolo/adapter-s3 @kolo/core
+yarn add @kolo/s3 @kolo/core
 ```
 
 For full functionality, you'll also need the AWS SDK:
@@ -24,7 +24,7 @@ npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { S3StorageAdapter } from '@kolo/adapter-s3';
+import { S3StorageAdapter } from '@kolo/s3';
 
 // Create storage manager
 const storageManager = new StorageManager();
@@ -50,7 +50,7 @@ storageManager.registerAdapter('s3', s3Adapter);
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { S3StorageAdapter } from '@kolo/adapter-s3';
+import { S3StorageAdapter } from '@kolo/s3';
 
 const storageManager = new StorageManager({
   defaultAdapter: 's3',

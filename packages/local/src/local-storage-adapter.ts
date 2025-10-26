@@ -3,7 +3,6 @@ import * as path from 'path';
 import { promisify } from 'util';
 import {
   BaseStorageAdapter,
-  LocalConfig,
   StorageFile,
   UploadOptions,
   UploadResponse,
@@ -22,6 +21,7 @@ import {
   sanitizeFilename,
   normalizePath,
 } from '@kolo/core';
+import { LocalConfig } from './interfaces';
 
 const mkdir = promisify(fs.mkdir);
 const writeFile = promisify(fs.writeFile);
@@ -37,13 +37,13 @@ const access = promisify(fs.access);
 export class LocalStorageAdapter extends BaseStorageAdapter {
   private readonly rootPath: string;
   private readonly baseUrl?: string;
-
+  protected static readonly ADAPTER_NAME = 'Local';
   constructor(config: LocalConfig) {
-    super(config, 'Local');
-    
+    super(config, LocalStorageAdapter.ADAPTER_NAME);
+
     if (!config.rootPath) {
       throw new StorageConfigurationException('Root path is required for local storage', {
-        provider: 'Local',
+        provider: LocalStorageAdapter.ADAPTER_NAME,
       });
     }
 
@@ -61,11 +61,14 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Upload a file
    */
-  protected async performUpload(file: StorageFile, options?: UploadOptions): Promise<UploadResponse> {
+  protected async performUpload(
+    file: StorageFile,
+    options?: UploadOptions,
+  ): Promise<UploadResponse> {
     try {
       const key = options?.key || this.generateFileKey(file.filename);
       const filePath = this.getFilePath(key);
-      
+
       // Ensure directory exists
       await this.ensureDirectoryExists(path.dirname(filePath));
 
@@ -100,7 +103,10 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   /**
    * Download a file
    */
-  protected async performDownload(key: string, _options?: DownloadOptions): Promise<DownloadResponse> {
+  protected async performDownload(
+    key: string,
+    _options?: DownloadOptions,
+  ): Promise<DownloadResponse> {
     try {
       const filePath = this.getFilePath(key);
 
@@ -181,9 +187,9 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
     try {
       const prefix = options?.prefix || '';
       const searchPath = path.join(this.rootPath, prefix);
-      
+
       const files = await this.listFilesRecursive(searchPath, prefix);
-      
+
       // Apply maxKeys limit if specified
       const maxKeys = options?.maxKeys || files.length;
       const limitedFiles = files.slice(0, maxKeys);
@@ -232,11 +238,11 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
     } catch (error) {
       const localConfig = this.config as LocalConfig;
       const options: { recursive: boolean; mode?: number } = { recursive: true };
-      
+
       if (localConfig.directoryPermissions) {
         options.mode = localConfig.directoryPermissions;
       }
-      
+
       await mkdir(dirPath, options);
     }
   }
@@ -312,7 +318,13 @@ export class LocalStorageAdapter extends BaseStorageAdapter {
   private handleError(
     error: unknown,
     defaultMessage: string,
-  ): UploadResponse | DownloadResponse | DeleteResponse | GetResponse | ListResponse | ExistsResponse {
+  ):
+    | UploadResponse
+    | DownloadResponse
+    | DeleteResponse
+    | GetResponse
+    | ListResponse
+    | ExistsResponse {
     if (error instanceof Error) {
       return {
         success: false,

@@ -25,10 +25,10 @@ packages/
 ```
 packages/
 ├── core/                    # @kolo/core
-├── adapter-local/           # @kolo/adapter-local
-├── adapter-s3/              # @kolo/adapter-s3
-├── adapter-cloudinary/      # @kolo/adapter-cloudinary
-├── adapter-azure/           # @kolo/adapter-azure
+├── adapter-local/           # @kolo/local
+├── adapter-s3/              # @kolo/s3
+├── adapter-cloudinary/      # @kolo/cloudinary
+├── adapter-azure/           # @kolo/azure
 └── index.ts                 # Re-exports all packages
 ```
 
@@ -136,9 +136,9 @@ const adapter = manager.getAdapterWithFallback('s3');
 ### 5. Modular Installation ✅
 ```bash
 # Install only what you need
-npm install @kolo/core @kolo/adapter-local
+npm install @kolo/core @kolo/local
 # Or
-npm install @kolo/core @kolo/adapter-s3 @kolo/adapter-cloudinary
+npm install @kolo/core @kolo/s3 @kolo/cloudinary
 ```
 
 ## Files Changed
@@ -159,7 +159,7 @@ import { LocalStorageAdapter } from '@kolo/core';
 **After:**
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
+import { LocalStorageAdapter } from '@kolo/local';
 ```
 
 ## Testing
@@ -201,8 +201,8 @@ The implementation follows the pattern from the PorkAte payment package as reque
 
 ```typescript
 import { StorageManager } from '@kolo/core';
-import { LocalStorageAdapter } from '@kolo/adapter-local';
-import { S3StorageAdapter } from '@kolo/adapter-s3';
+import { LocalStorageAdapter } from '@kolo/local';
+import { S3StorageAdapter } from '@kolo/s3';
 
 const manager = new StorageManager({
   defaultAdapter: 's3',
