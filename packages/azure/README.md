@@ -117,9 +117,9 @@ const listResult = await adapter.list({
 
 - `provider` (string, required): Provider name (should be 'azure')
 - `containerName` (string, required): Container name (must exist in your storage account)
-- `accountName` (string, optional): Azure storage account name
-- `accountKey` (string, optional): Azure storage account key
-- `connectionString` (string, optional): Connection string (alternative to accountName/accountKey)
+- `connectionString` (string, conditionally required): Connection string (alternative to accountName/accountKey)
+- `accountName` (string, conditionally required): Azure storage account name (required if not using connectionString)
+- `accountKey` (string, conditionally required): Azure storage account key (required if not using connectionString)
 - `basePath` (string, optional): Base path/prefix for all operations
 
 **Note:** You must provide either `connectionString` OR both `accountName` and `accountKey`.

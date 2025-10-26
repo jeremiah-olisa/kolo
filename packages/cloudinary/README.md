@@ -74,7 +74,7 @@ const storageManager = new StorageManager({
         apiSecret: process.env.CLOUDINARY_API_SECRET,
         folder: 'uploads',
         secure: true,
-        resourceType: 'auto',
+        resourceType: 'auto', // Optional: auto-detect resource type (default)
       },
     },
   ],
