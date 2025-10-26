@@ -1,0 +1,21 @@
+{
+  "name": "@kolo/example-events",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Event system examples for Kolo storage",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "start:logger": "ts-node src/logger-example.ts",
+    "start:interceptor": "ts-node src/interceptor-example.ts",
+    "start:monitor": "ts-node src/monitor-example.ts"
+  },
+  "dependencies": {
+    "@kolo/core": "workspace:*",
+    "@kolo/adapter-local": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
